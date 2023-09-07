@@ -4,8 +4,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
 @SpringBootApplication
-class ListeningplatformApplication
+class ListeningPlatformApplication
 
+@Suppress("SpreadOperator")
 fun main(args: Array<String>) {
-	runApplication<ListeningplatformApplication>(*args)
+	runApplication<ListeningPlatformApplication>(*args)
 }
