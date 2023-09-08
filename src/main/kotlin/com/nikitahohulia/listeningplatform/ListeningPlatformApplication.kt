@@ -8,5 +8,5 @@ class ListeningPlatformApplication
 
 @Suppress("SpreadOperator")
 fun main(args: Array<String>) {
-	runApplication<ListeningPlatformApplication>(*args)
+    runApplication<ListeningPlatformApplication>(*args)
 }

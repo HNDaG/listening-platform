@@ -6,7 +6,6 @@ import org.springframework.boot.test.context.SpringBootTest
 @SpringBootTest
 class ListeningPlatformApplicationTests {
 
-	@Test
-	fun contextLoads() = Unit
-
+    @Test
+    fun contextLoads() = Unit
 }
