@@ -4,7 +4,7 @@ import com.nikitahohulia.listeningplatform.entity.Post
 import com.nikitahohulia.listeningplatform.entity.Publisher
 import com.nikitahohulia.listeningplatform.repository.PostRepository
 import com.nikitahohulia.listeningplatform.repository.PublisherRepository
-import org.springframework.data.repository.findByIdOrNull
+import jakarta.persistence.EntityNotFoundException
 import org.springframework.stereotype.Service
 
 @Service
@@ -12,12 +12,14 @@ class PublisherServiceImpl(
     private val publisherRepository: PublisherRepository,
     private val postRepository: PostRepository
 ) : PublisherService {
-    override fun getPublisherById(id: Long): Publisher? {
-        return publisherRepository.findByIdOrNull(id)
+    override fun getPublisherById(id: Long): Publisher {
+        return publisherRepository.findById(id)
+            .orElseThrow { EntityNotFoundException("Publisher not found with given id = $id") }
     }
 
-    override fun getPublisherByPublisherName(publisherName: String): Publisher? {
-        return publisherRepository.findByPublisherName(publisherName)
+    override fun getPublisherByPublisherName(publisherName: String): Publisher {
+        return publisherRepository.findByPublisherName(publisherName) ?:
+            throw ( EntityNotFoundException("Publisher not found with given publisherName = $publisherName") )
     }
 
     override fun createPublisher(publisher: Publisher): Publisher {
