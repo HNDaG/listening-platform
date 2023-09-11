@@ -18,8 +18,8 @@ class PublisherServiceImpl(
     }
 
     override fun getPublisherByPublisherName(publisherName: String): Publisher {
-        return publisherRepository.findByPublisherName(publisherName) ?:
-            throw ( EntityNotFoundException("Publisher not found with given publisherName = $publisherName") )
+        return publisherRepository.findByPublisherName(publisherName)
+            ?: throw EntityNotFoundException("Publisher not found with given publisherName = $publisherName")
     }
 
     override fun createPublisher(publisher: Publisher): Publisher {
