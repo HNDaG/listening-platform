@@ -6,5 +6,6 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface PublisherRepository : JpaRepository<Publisher, Long> {
+
     fun findByPublisherName(publisherName: String): Publisher?
 }

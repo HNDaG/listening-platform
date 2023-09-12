@@ -12,6 +12,7 @@ class PublisherServiceImpl(
     private val publisherRepository: PublisherRepository,
     private val postRepository: PostRepository
 ) : PublisherService {
+
     override fun getPublisherById(id: Long): Publisher {
         return publisherRepository.findById(id)
             .orElseThrow { EntityNotFoundException("Publisher not found with given id = $id") }

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/api/V1/users")
 class UserController(private val userService: UserServiceImpl) {
+
     @GetMapping
     fun findAllUsers(): ResponseEntity<List<User>> {
         val users = userService.getAllUsers()
