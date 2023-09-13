@@ -23,7 +23,7 @@ class UserController(private val userService: UserServiceImpl) {
     }
 
     @GetMapping("/{id}")
-    fun findUserById(@PathVariable id: Long): ResponseEntity<User?> {
+    fun findUserById(@PathVariable id: Long): ResponseEntity<User> {
         val user = userService.getUserById(id)
         return ResponseEntity.ok(user)
     }
