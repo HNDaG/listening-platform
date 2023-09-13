@@ -1,23 +1,15 @@
 package com.nikitahohulia.listeningplatform.entity
 
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
-import jakarta.persistence.OneToMany
-import jakarta.persistence.Table
+import org.bson.codecs.pojo.annotations.BsonProperty
+import org.bson.types.ObjectId
+import org.springframework.data.annotation.Id
+import org.springframework.data.mongodb.core.mapping.Document
 
-@Entity
-@Table(name = "publisher")
-class Publisher(
+@Document(collection = "publisher")
+data class Publisher(
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long? = null,
-    @Column(unique = true, nullable = false)
-    var publisherName: String,
-    @OneToMany
-    val posts: MutableSet<Post> = mutableSetOf(),
-    @Column(nullable = true)
-    var rating: Double? = null
+    val id: ObjectId? = null,
+    @BsonProperty(value = "publisher_name")
+    val publisherName: String,
+    val rating: Double? = null,
 )
