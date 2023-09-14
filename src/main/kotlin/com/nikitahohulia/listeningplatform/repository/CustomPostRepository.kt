@@ -17,5 +17,5 @@ interface CustomPostRepository {
 
     fun deleteByPublisherId(id: ObjectId)
 
-    fun getPostsByCreatorIdOrderByCreatedAt(creatorId: ObjectId): List<Post>
+    fun findAllPostsByCreatorIdOrderByCreatedAt(creatorId: ObjectId): List<Post>
 }
