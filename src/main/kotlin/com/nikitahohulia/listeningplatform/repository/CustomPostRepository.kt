@@ -5,7 +5,7 @@ import org.bson.types.ObjectId
 
 interface CustomPostRepository {
 
-    fun getPostById(id: ObjectId): Post?
+    fun findPostById(id: ObjectId): Post?
 
     fun findAll(): List<Post>
 
