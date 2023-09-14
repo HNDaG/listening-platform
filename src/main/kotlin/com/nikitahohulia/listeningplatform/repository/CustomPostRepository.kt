@@ -9,7 +9,7 @@ interface CustomPostRepository {
 
     fun findAll(): List<Post>
 
-    fun findByCreatorId(id: ObjectId): List<Post>
+    fun findAllByCreatorId(id: ObjectId): List<Post>
 
     fun save(post: Post): Post?
 
