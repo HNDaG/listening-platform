@@ -24,7 +24,6 @@ class CustomPostRepositoryImpl(private val mongoTemplate: MongoTemplate) : Custo
 
     override fun findByCreatorId(id: ObjectId): List<Post> {
         val query = Query().addCriteria(Criteria.where("creatorId").`is`(id))
-        println(id.toHexString())
         return mongoTemplate.find(query, Post::class.java, collectionName)
     }
 
