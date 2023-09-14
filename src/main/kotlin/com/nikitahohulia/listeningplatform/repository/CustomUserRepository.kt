@@ -5,7 +5,7 @@ import org.bson.types.ObjectId
 
 interface CustomUserRepository {
 
-    fun getUserById(id: ObjectId): User?
+    fun findUserById(id: ObjectId): User?
 
     fun findAll(): List<User>
 
