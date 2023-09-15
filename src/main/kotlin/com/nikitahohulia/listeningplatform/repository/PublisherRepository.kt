@@ -1,11 +1,14 @@
 package com.nikitahohulia.listeningplatform.repository
 
 import com.nikitahohulia.listeningplatform.entity.Publisher
-import org.springframework.data.jpa.repository.JpaRepository
+import org.bson.types.ObjectId
+import org.springframework.data.mongodb.repository.MongoRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface PublisherRepository : JpaRepository<Publisher, Long> {
+interface PublisherRepository : MongoRepository<Publisher, ObjectId> {
 
     fun findByPublisherName(publisherName: String): Publisher?
+
+    fun deleteByPublisherName(publisherName: String): Unit
 }

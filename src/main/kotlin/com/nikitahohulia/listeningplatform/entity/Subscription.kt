@@ -1,21 +1,16 @@
 package com.nikitahohulia.listeningplatform.entity
 
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
-import jakarta.persistence.ManyToOne
-import jakarta.persistence.Table
+import org.bson.codecs.pojo.annotations.BsonProperty
+import org.bson.types.ObjectId
+import org.springframework.data.annotation.Id
+import org.springframework.data.mongodb.core.mapping.Document
 
-@Entity
-@Table(name = "subscriptions")
-class Subscription(
+@Document(collection = "subscription")
+data class Subscription(
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    var id: Long? = null,
-    @ManyToOne
-    var user: User,
-    @ManyToOne
-    var target: Publisher
+    val id: ObjectId? = null,
+    @BsonProperty(value = "user_id")
+    val userId: ObjectId,
+    @BsonProperty(value = "publisher_id")
+    val publisherId: ObjectId
 )
-

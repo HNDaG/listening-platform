@@ -1,24 +1,20 @@
 package com.nikitahohulia.listeningplatform.entity
 
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
-import jakarta.persistence.ManyToOne
+import org.bson.codecs.pojo.annotations.BsonProperty
+import org.bson.types.ObjectId
+import org.springframework.data.annotation.Id
+import org.springframework.data.mongodb.core.mapping.Document
 import java.time.LocalDateTime
 
-@Entity
-class Post(
+@Document(collection = "post")
+data class Post(
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    var id: Long? = null,
-    @ManyToOne
-    val creator: Publisher,
-    @Column(nullable = false, length = 280)
-    var content: String,
-    @Column(nullable = false)
-    val createdAt: LocalDateTime = LocalDateTime.now(),
-    @Column(nullable = true)
-    var thumbsUp: Double? = null
+    val id: ObjectId? = null,
+    @BsonProperty(value = "creator_id")
+    val creatorId: ObjectId,
+    val content: String,
+    @BsonProperty(value = "created_at")
+    val createdAt: LocalDateTime,
+    @BsonProperty(value = "thumbs_up")
+    val thumbsUp: Int
 )
