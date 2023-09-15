@@ -10,5 +10,5 @@ interface PublisherRepository : MongoRepository<Publisher, ObjectId> {
 
     fun findByPublisherName(publisherName: String): Publisher?
 
-    fun deleteByPublisherName(publisherName: String): Unit
+    fun deleteByPublisherName(publisherName: String)
 }
