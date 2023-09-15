@@ -12,7 +12,7 @@ class CustomUserRepositoryImpl(private val mongoTemplate: MongoTemplate) : Custo
 
     val collectionName = "user"
 
-    override fun getUserById(id: ObjectId): User? {
+    override fun findUserById(id: ObjectId): User? {
         val query = Query().addCriteria(Criteria.where("id").`is`(id))
         return mongoTemplate.findOne(query, User::class.java, collectionName)
     }

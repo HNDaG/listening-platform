@@ -13,7 +13,7 @@ class CustomPostRepositoryImpl(private val mongoTemplate: MongoTemplate) : Custo
 
     val collectionName = "post"
 
-    override fun getPostById(id: ObjectId): Post? {
+    override fun findPostById(id: ObjectId): Post? {
         val query = Query().addCriteria(Criteria.where("id").`is`(id))
         return mongoTemplate.findOne(query, Post::class.java, collectionName)
     }
@@ -22,7 +22,7 @@ class CustomPostRepositoryImpl(private val mongoTemplate: MongoTemplate) : Custo
         return mongoTemplate.findAll(Post::class.java, collectionName)
     }
 
-    override fun findByCreatorId(id: ObjectId): List<Post> {
+    override fun findAllByCreatorId(id: ObjectId): List<Post> {
         val query = Query().addCriteria(Criteria.where("creatorId").`is`(id))
         return mongoTemplate.find(query, Post::class.java, collectionName)
     }
@@ -41,7 +41,7 @@ class CustomPostRepositoryImpl(private val mongoTemplate: MongoTemplate) : Custo
         mongoTemplate.remove(query, Post::class.java)
     }
 
-    override fun getPostsByCreatorIdOrderByCreatedAt(creatorId: ObjectId): List<Post> {
+    override fun findAllPostsByCreatorIdOrderByCreatedAt(creatorId: ObjectId): List<Post> {
         val query = Query().addCriteria(Criteria.where("creatorId").`is`(creatorId))
         query.with(Sort.by(Sort.Order.desc("createdAt")))
         return mongoTemplate.find(query, Post::class.java, collectionName)
