@@ -1,6 +1,7 @@
 package com.nikitahohulia.listeningplatform.bpp
 
 import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.cglib.proxy.Enhancer
 import org.springframework.cglib.proxy.MethodInterceptor
@@ -8,19 +9,19 @@ import org.springframework.stereotype.Component
 import kotlin.reflect.KClass
 
 @Component
-class LogOnExceptionAnnotationBeanPostProcessor(private val logger: Logger) : BeanPostProcessor {
+class LogOnExceptionAnnotationBeanPostProcessor : BeanPostProcessor {
 
     private val beanMap = mutableMapOf<String, KClass<*>>()
 
-    override fun postProcessBeforeInitialization(bean: Any, beanName: String): Any? {
+    override fun postProcessBeforeInitialization(bean: Any, beanName: String): Any {
         val beanClass = bean::class
         if (beanClass.java.isAnnotationPresent(LogOnException::class.java)) {
             beanMap[beanName] = beanClass
         }
-        return super.postProcessBeforeInitialization(bean, beanName)
+        return bean
     }
 
-    override fun postProcessAfterInitialization(bean: Any, beanName: String): Any? {
+    override fun postProcessAfterInitialization(bean: Any, beanName: String): Any {
         return beanMap[beanName]
             ?.let { originClass -> decorate(originClass, bean) }
             ?: bean
@@ -48,5 +49,9 @@ class LogOnExceptionAnnotationBeanPostProcessor(private val logger: Logger) : Be
             )
             throw ex
         }
+    }
+
+    companion object {
+        private val logger: Logger = LoggerFactory.getLogger(LogOnExceptionAnnotationBeanPostProcessor::class.java)
     }
 }
