@@ -1,5 +1,6 @@
 package com.nikitahohulia.listeningplatform.controller
 
+import com.nikitahohulia.listeningplatform.bpp.LogOnException
 import com.nikitahohulia.listeningplatform.dto.request.PublisherDtoRequest
 import com.nikitahohulia.listeningplatform.dto.response.PostDtoResponse
 import com.nikitahohulia.listeningplatform.dto.response.PublisherDtoResponse
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
+@LogOnException
 @RestController
 @RequestMapping("/api/V1/publishers")
 class PublisherController(private val publisherService: PublisherService) {
