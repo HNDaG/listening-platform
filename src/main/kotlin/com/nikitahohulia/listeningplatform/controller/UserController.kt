@@ -1,7 +1,13 @@
 package com.nikitahohulia.listeningplatform.controller
 
+import com.nikitahohulia.listeningplatform.dto.request.PublisherDtoRequest
+import com.nikitahohulia.listeningplatform.dto.request.UserDtoRequest
+import com.nikitahohulia.listeningplatform.dto.response.PublisherDtoResponse
+import com.nikitahohulia.listeningplatform.dto.response.SubscriptionDtoResponse
+import com.nikitahohulia.listeningplatform.dto.response.UserDtoResponse
 import com.nikitahohulia.listeningplatform.entity.User
 import com.nikitahohulia.listeningplatform.service.UserServiceImpl
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -17,26 +23,45 @@ import org.springframework.web.bind.annotation.RestController
 class UserController(private val userService: UserServiceImpl) {
 
     @GetMapping
-    fun findAllUsers(): ResponseEntity<List<User>> {
+    fun findAllUsers(): ResponseEntity<List<UserDtoResponse>> {
         val users = userService.getAllUsers()
         return ResponseEntity.ok(users)
     }
 
-    @GetMapping("/{id}")
-    fun findUserById(@PathVariable id: Long): ResponseEntity<User> {
-        val user = userService.getUserById(id)
+    @GetMapping("/{username}")
+    fun findUserByUsername(@PathVariable username: String): ResponseEntity<User> {
+        val user = userService.getUserByUsername(username)
         return ResponseEntity.ok(user)
     }
 
     @PostMapping
-    fun createUser(@RequestBody user: User): ResponseEntity<User> {
+    fun createUser(@Valid @RequestBody user: UserDtoRequest): ResponseEntity<UserDtoResponse> {
         val createdUser = userService.createUser(user)
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser)
     }
 
-    @DeleteMapping("/{id}")
-    fun deleteUser(@PathVariable id: Long): ResponseEntity<Unit> {
-        userService.deleteUser(id)
+    @DeleteMapping("/{username}")
+    fun deleteUser(@PathVariable username: String): ResponseEntity<Unit> {
+        userService.deleteUserByUsername(username)
         return ResponseEntity.ok().build()
+    }
+
+    @PostMapping("/{username}/to/{publisherName}")
+    fun subscribe(
+        @PathVariable("username") username: String,
+        @PathVariable("publisherName") publisherName: String
+    ): ResponseEntity<SubscriptionDtoResponse> {
+        val newSubscription = userService.subscribe(username, publisherName)
+        return ResponseEntity.status(HttpStatus.CREATED).body(newSubscription)
+    }
+
+    @PostMapping("/{username}/becomePublisher")
+    fun becomePublisher(
+        @PathVariable("username") username: String,
+        @Valid @RequestBody publisherDtoRequest: PublisherDtoRequest
+    ): ResponseEntity<PublisherDtoResponse> {
+        return ResponseEntity.status(
+            HttpStatus.CREATED
+        ).body(userService.becamePublisher(username, publisherDtoRequest))
     }
 }

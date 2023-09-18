@@ -1,19 +1,22 @@
 package com.nikitahohulia.listeningplatform.service
 
-import com.nikitahohulia.listeningplatform.entity.Post
-import com.nikitahohulia.listeningplatform.entity.Publisher
+import com.nikitahohulia.listeningplatform.dto.request.PublisherDtoRequest
+import com.nikitahohulia.listeningplatform.dto.response.PostDtoResponse
+import com.nikitahohulia.listeningplatform.dto.response.PublisherDtoResponse
 
 interface PublisherService {
 
-    fun getPublisherById(id: Long): Publisher
+    fun getPublisherByUsername(username: String): PublisherDtoResponse
 
-    fun getPublisherByPublisherName(publisherName: String): Publisher
+    fun getPublisherByPublisherName(publisherName: String): PublisherDtoResponse
 
-    fun createPublisher(publisher: Publisher): Publisher
+    fun createPublisher(publisherDtoRequest: PublisherDtoRequest): PublisherDtoResponse
 
-    fun getAllPublishers(): List<Publisher>
+    fun getAllPublishers(): List<PublisherDtoResponse>
 
-    fun deletePublisher(id: Long)
+    fun deletePublisher(publisherName: String)
 
-    fun postContent(post: Post): Post
+    fun postContent(publisherName: String, content: String): PostDtoResponse
+
+    fun getPostsByPublisherName(publisherName: String): List<PostDtoResponse>
 }

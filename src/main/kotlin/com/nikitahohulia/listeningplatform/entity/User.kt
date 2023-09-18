@@ -1,6 +1,5 @@
 package com.nikitahohulia.listeningplatform.entity
 
-import org.bson.codecs.pojo.annotations.BsonProperty
 import org.bson.types.ObjectId
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
@@ -12,7 +11,6 @@ data class User(
     val username: String,
     val password: String,
     val email: String,
-    val subscriptions: List<Subscription> = mutableListOf(),
-    @BsonProperty(value = "publisher_id")
-    val publisher: Publisher? = null
+    val subscriptions: MutableSet<Subscription> = mutableSetOf(),
+    val publisherId: ObjectId? = null
 )
