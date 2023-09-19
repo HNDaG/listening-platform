@@ -3,6 +3,7 @@ package com.nikitahohulia.listeningplatform.service
 import com.nikitahohulia.listeningplatform.dto.request.PublisherDtoRequest
 import com.nikitahohulia.listeningplatform.dto.request.UserDtoRequest
 import com.nikitahohulia.listeningplatform.dto.request.toEntity
+import com.nikitahohulia.listeningplatform.dto.response.PostDtoResponse
 import com.nikitahohulia.listeningplatform.dto.response.PublisherDtoResponse
 import com.nikitahohulia.listeningplatform.dto.response.SubscriptionDtoResponse
 import com.nikitahohulia.listeningplatform.dto.response.UserDtoResponse
@@ -11,6 +12,7 @@ import com.nikitahohulia.listeningplatform.entity.Subscription
 import com.nikitahohulia.listeningplatform.entity.User
 import com.nikitahohulia.listeningplatform.exception.DuplicateException
 import com.nikitahohulia.listeningplatform.exception.NotFoundException
+import com.nikitahohulia.listeningplatform.repository.CustomPostRepository
 import com.nikitahohulia.listeningplatform.repository.CustomUserRepository
 import com.nikitahohulia.listeningplatform.repository.PublisherRepository
 import com.nikitahohulia.listeningplatform.repository.SubscriptionRepository
@@ -22,8 +24,11 @@ import java.lang.IllegalArgumentException
 class UserServiceImpl(
     private val userRepository: CustomUserRepository,
     private val publisherRepository: PublisherRepository,
-    private val subscriptionRepository: SubscriptionRepository
+    private val subscriptionRepository: SubscriptionRepository,
+    private val postRepository: CustomPostRepository
 ) : UserService {
+
+    val pageSize: Int = 5
 
     override fun getUserByUsername(username: String): User {
         return userRepository.findByUsername(username)
@@ -67,6 +72,9 @@ class UserServiceImpl(
     }
 
     override fun deleteUserByUsername(username: String) {
+        val user = getUserByUsername(username)
+        for (sub in user.subscriptions)
+            sub.id?.let { subscriptionRepository.deleteById(it) }
         return userRepository.deleteUserByUsername(username)
     }
 
@@ -82,5 +90,10 @@ class UserServiceImpl(
             return subscription.toResponse()
         }
         throw IllegalArgumentException("Database internal fail")
+    }
+
+    override fun getPostsFromFollowedCreators(username: String, page: Int): List<PostDtoResponse> {
+        val ids = userRepository.findPublisherIdsByUsername(username)
+        return postRepository.findAllBySubscriptionIds(ids, page, pageSize).map { it.toResponse() }
     }
 }

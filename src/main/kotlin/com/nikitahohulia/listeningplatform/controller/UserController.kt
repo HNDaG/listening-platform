@@ -3,6 +3,7 @@ package com.nikitahohulia.listeningplatform.controller
 import com.nikitahohulia.listeningplatform.bpp.LogOnException
 import com.nikitahohulia.listeningplatform.dto.request.PublisherDtoRequest
 import com.nikitahohulia.listeningplatform.dto.request.UserDtoRequest
+import com.nikitahohulia.listeningplatform.dto.response.PostDtoResponse
 import com.nikitahohulia.listeningplatform.dto.response.PublisherDtoResponse
 import com.nikitahohulia.listeningplatform.dto.response.SubscriptionDtoResponse
 import com.nikitahohulia.listeningplatform.dto.response.UserDtoResponse
@@ -65,5 +66,16 @@ class UserController(private val userService: UserServiceImpl) {
         return ResponseEntity.status(
             HttpStatus.CREATED
         ).body(userService.becamePublisher(username, publisherDtoRequest))
+    }
+
+    @GetMapping("/{username}/posts/{page}")
+    fun getContentFromCreators(
+        @PathVariable("username") username: String,
+        @PathVariable page: Int = 1
+    ): ResponseEntity<List<PostDtoResponse>> {
+        val posts = userService.getPostsFromFollowedCreators(username, page)
+        return ResponseEntity.status(
+            HttpStatus.OK
+        ).body(posts)
     }
 }
