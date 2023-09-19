@@ -16,4 +16,8 @@ interface CustomUserRepository {
     fun findByUsername(username: String): User?
 
     fun deleteUserByUsername(username: String)
+
+    fun findByPublisherId(publisherId: ObjectId): User?
+
+    fun findPublisherIdsByUsername(username: String): List<ObjectId>
 }

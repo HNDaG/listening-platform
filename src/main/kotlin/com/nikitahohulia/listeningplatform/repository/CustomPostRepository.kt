@@ -18,4 +18,8 @@ interface CustomPostRepository {
     fun deleteByPublisherId(id: ObjectId)
 
     fun findAllPostsByCreatorIdOrderByCreatedAt(creatorId: ObjectId): List<Post>
+
+    fun findAllPublisherIdByUserId(userId: ObjectId): List<ObjectId>
+
+    fun findAllBySubscriptionIds(subscriptionIds: List<ObjectId>, page: Int, size: Int): List<Post>
 }
