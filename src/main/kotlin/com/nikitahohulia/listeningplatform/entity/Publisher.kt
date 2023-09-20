@@ -9,5 +9,6 @@ data class Publisher(
     @Id
     val id: ObjectId? = null,
     val publisherName: String,
+    val password: String,
     val rating: Double? = null,
 )

@@ -48,6 +48,14 @@ class PublisherServiceImpl(
     }
 
     override fun deletePublisher(publisherName: String) {
+        val publisher = publisherRepository.findByPublisherName(publisherName)
+            ?: throw NotFoundException("Publisher not found with given publisherName = $publisherName")
+        val user = publisher.id?.let { userRepository.findByPublisherId(it) }
+
+        if (user?.publisherId != null) {
+            val updatedUser = user.copy(publisherId = null)
+            userRepository.save(updatedUser)
+        }
         publisherRepository.deleteByPublisherName(publisherName)
     }
 

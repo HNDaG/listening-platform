@@ -46,4 +46,21 @@ class CustomPostRepositoryImpl(private val mongoTemplate: MongoTemplate) : Custo
         query.with(Sort.by(Sort.Order.desc("createdAt")))
         return mongoTemplate.find(query, Post::class.java, collectionName)
     }
+
+    override fun findAllPublisherIdByUserId(userId: ObjectId): List<ObjectId> {
+        val query = Query().addCriteria(Criteria.where("creatorId").`is`(userId))
+        query.fields().include("creatorId")
+        val posts = mongoTemplate.find(query, Post::class.java, collectionName)
+        return posts.filterNotNull().map { it.creatorId }
+    }
+
+    override fun findAllBySubscriptionIds(subscriptionIds: List<ObjectId>, page: Int, size: Int): List<Post> {
+        val skip = ((page - 1) * size).toLong()
+        val query = Query()
+            .addCriteria(Criteria.where("creatorId").`in`(subscriptionIds))
+            .with(Sort.by(Sort.Direction.DESC, "createdAt"))
+            .skip(skip)
+            .limit(size)
+        return mongoTemplate.find(query, Post::class.java, collectionName).filterNotNull()
+    }
 }

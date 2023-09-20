@@ -1,6 +1,7 @@
 package com.nikitahohulia.listeningplatform.repository
 
 import com.nikitahohulia.listeningplatform.entity.User
+import com.nikitahohulia.listeningplatform.exception.NotFoundException
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Criteria
@@ -38,5 +39,16 @@ class CustomUserRepositoryImpl(private val mongoTemplate: MongoTemplate) : Custo
     override fun deleteUserByUsername(username: String) {
         val query = Query().addCriteria(Criteria.where("username").`is`(username))
         mongoTemplate.remove(query, User::class.java, collectionName)
+    }
+
+    override fun findByPublisherId(publisherId: ObjectId): User? {
+        val query = Query().addCriteria(Criteria.where("publisherId").`is`(publisherId))
+        return mongoTemplate.findOne(query, User::class.java, collectionName)
+    }
+
+    override fun findPublisherIdsByUsername(username: String): List<ObjectId> {
+        val user = findByUsername(username)
+            ?: throw NotFoundException("User not found with given username = $username")
+        return user.subscriptions.map { it.publisherId }
     }
 }

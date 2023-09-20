@@ -3,6 +3,7 @@ package com.nikitahohulia.listeningplatform.controller
 import com.nikitahohulia.listeningplatform.bpp.LogOnException
 import com.nikitahohulia.listeningplatform.dto.request.PublisherDtoRequest
 import com.nikitahohulia.listeningplatform.dto.request.UserDtoRequest
+import com.nikitahohulia.listeningplatform.dto.response.PostDtoResponse
 import com.nikitahohulia.listeningplatform.dto.response.PublisherDtoResponse
 import com.nikitahohulia.listeningplatform.dto.response.SubscriptionDtoResponse
 import com.nikitahohulia.listeningplatform.dto.response.UserDtoResponse
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @LogOnException
@@ -65,5 +67,17 @@ class UserController(private val userService: UserServiceImpl) {
         return ResponseEntity.status(
             HttpStatus.CREATED
         ).body(userService.becamePublisher(username, publisherDtoRequest))
+    }
+
+    @GetMapping("/{username}/posts")
+    fun getContentFromCreators(
+        @PathVariable("username") username: String,
+        @RequestParam(name = "page", defaultValue = "1") page: Int,
+        @RequestParam(name = "pageSize", defaultValue = "5") pageSize: Int
+    ): ResponseEntity<List<PostDtoResponse>> {
+        val posts = userService.getPostsFromFollowedCreators(username, page, pageSize)
+        return ResponseEntity.status(
+            HttpStatus.OK
+        ).body(posts)
     }
 }
