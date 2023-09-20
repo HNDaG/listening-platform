@@ -18,7 +18,6 @@ import com.nikitahohulia.listeningplatform.repository.PublisherRepository
 import com.nikitahohulia.listeningplatform.repository.SubscriptionRepository
 import org.bson.types.ObjectId
 import org.springframework.stereotype.Service
-import java.lang.IllegalArgumentException
 
 @Service
 class UserServiceImpl(
@@ -73,8 +72,9 @@ class UserServiceImpl(
 
     override fun deleteUserByUsername(username: String) {
         val user = getUserByUsername(username)
-        for (sub in user.subscriptions)
-            sub.id?.let { subscriptionRepository.deleteById(it) }
+        user.subscriptions.asSequence()
+            .mapNotNull { it.id }
+            .forEach { subscriptionRepository.deleteById(it) }
         return userRepository.deleteUserByUsername(username)
     }
 

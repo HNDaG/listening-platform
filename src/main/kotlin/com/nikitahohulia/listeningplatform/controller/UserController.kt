@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @LogOnException
@@ -68,10 +69,10 @@ class UserController(private val userService: UserServiceImpl) {
         ).body(userService.becamePublisher(username, publisherDtoRequest))
     }
 
-    @GetMapping("/{username}/posts/{page}")
+    @GetMapping("/{username}/posts}")
     fun getContentFromCreators(
         @PathVariable("username") username: String,
-        @PathVariable page: Int = 1
+        @RequestParam(name = "page", defaultValue = "1") page: Int
     ): ResponseEntity<List<PostDtoResponse>> {
         val posts = userService.getPostsFromFollowedCreators(username, page)
         return ResponseEntity.status(
