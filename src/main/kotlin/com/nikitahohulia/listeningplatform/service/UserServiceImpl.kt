@@ -18,7 +18,6 @@ import com.nikitahohulia.listeningplatform.repository.PublisherRepository
 import com.nikitahohulia.listeningplatform.repository.SubscriptionRepository
 import org.bson.types.ObjectId
 import org.springframework.stereotype.Service
-import java.lang.IllegalArgumentException
 
 @Service
 class UserServiceImpl(
