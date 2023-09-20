@@ -69,7 +69,7 @@ class UserController(private val userService: UserServiceImpl) {
         ).body(userService.becamePublisher(username, publisherDtoRequest))
     }
 
-    @GetMapping("/{username}/posts}")
+    @GetMapping("/{username}/posts")
     fun getContentFromCreators(
         @PathVariable("username") username: String,
         @RequestParam(name = "page", defaultValue = "1") page: Int
