@@ -72,9 +72,10 @@ class UserController(private val userService: UserServiceImpl) {
     @GetMapping("/{username}/posts")
     fun getContentFromCreators(
         @PathVariable("username") username: String,
-        @RequestParam(name = "page", defaultValue = "1") page: Int
+        @RequestParam(name = "page", defaultValue = "1") page: Int,
+        @RequestParam(name = "pageSize", defaultValue = "5") pageSize: Int
     ): ResponseEntity<List<PostDtoResponse>> {
-        val posts = userService.getPostsFromFollowedCreators(username, page)
+        val posts = userService.getPostsFromFollowedCreators(username, page, pageSize)
         return ResponseEntity.status(
             HttpStatus.OK
         ).body(posts)

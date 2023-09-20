@@ -24,5 +24,5 @@ interface UserService {
 
     fun subscribe(username: String, publisherName: String): SubscriptionDtoResponse
 
-    fun getPostsFromFollowedCreators(username: String, page: Int): List<PostDtoResponse>
+    fun getPostsFromFollowedCreators(username: String, page: Int, pageSize: Int): List<PostDtoResponse>
 }

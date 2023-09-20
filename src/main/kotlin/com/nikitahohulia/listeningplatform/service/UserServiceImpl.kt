@@ -27,8 +27,6 @@ class UserServiceImpl(
     private val postRepository: CustomPostRepository
 ) : UserService {
 
-    val pageSize: Int = 5
-
     override fun getUserByUsername(username: String): User {
         return userRepository.findByUsername(username)
             ?: throw NotFoundException("User not found with given username = $username")
@@ -92,7 +90,7 @@ class UserServiceImpl(
         throw IllegalArgumentException("Database internal fail")
     }
 
-    override fun getPostsFromFollowedCreators(username: String, page: Int): List<PostDtoResponse> {
+    override fun getPostsFromFollowedCreators(username: String, page: Int, pageSize: Int): List<PostDtoResponse> {
         val ids = userRepository.findPublisherIdsByUsername(username)
         return postRepository.findAllBySubscriptionIds(ids, page, pageSize).map { it.toResponse() }
     }
