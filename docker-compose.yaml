@@ -1,22 +1,23 @@
-version: "3.8"
-
 services:
   app:
-    build:
-      dockerfile: Dockerfile
-    ports:
-      - "8080:8080"
+    build: .
     depends_on:
-      - mongodb
+      mongodb:
+        condition: service_healthy
+    ports:
+      - 8080:8080
 
   mongodb:
-    image: mongo
-    container_name: mongodb
-    ports:
-      - "27017:27017"
+    image: mongo:latest
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: root
-      MONGO_INITDB_DATABASE: mydb
+      - MONGO_INITDB_ROOT_PASSWORD=secret1
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_DATABASE=mydb
+    ports:
+      - 27017:27017
+    healthcheck:
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
+      timeout: 5s
+      retries: 10
     volumes:
       - ./mongodb_data:/data/db
