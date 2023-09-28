@@ -34,6 +34,7 @@ class LogOnExceptionAnnotationBeanPostProcessor : BeanPostProcessor {
         }.create()
     }
 
+    @Suppress("Detekt:TooGenericExceptionCaught")
     private fun buildInterceptor(
         bean: Any,
     ): MethodInterceptor = MethodInterceptor { _, method, args, proxy ->

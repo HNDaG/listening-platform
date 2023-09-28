@@ -92,6 +92,10 @@ class UserServiceImpl(
 
     override fun getPostsFromFollowedCreators(username: String, page: Int, pageSize: Int): List<PostDtoResponse> {
         val ids = userRepository.findPublisherIdsByUsername(username)
-        return postRepository.findAllBySubscriptionIds(ids, page, pageSize).map { it.toResponse() }
+        return postRepository.findAllBySubscriptionIds(ids, page, DEFAULT_PAGE_SIZE).map { it.toResponse() }
+    }
+
+    private companion object {
+        const val DEFAULT_PAGE_SIZE: Int = 5
     }
 }
