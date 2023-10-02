@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package com.nikitahohulia.nats.reqreply.user.create.proto;
+
+option java_multiple_files = true;
+
+import "com/nikitahohulia/nats/commonmodels/user/User.proto";
+
+message UpdateUserRequestCommon {
+  commonmodels.user.User user = 1;
+}
+
+message UpdateUserResponseCommon {
+  oneof response {
+    Success success = 1;
+    Failure failure = 2;
+  }
+
+  message Success {
+    commonmodels.user.User user = 1;
+  }
+
+  message Failure {
+    string message = 1;
+  }
+}
