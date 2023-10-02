@@ -5,17 +5,14 @@ import com.nikitahohulia.listeningplatform.dto.request.UserDtoRequest
 import com.nikitahohulia.listeningplatform.dto.request.toEntity
 import com.nikitahohulia.listeningplatform.dto.response.PostDtoResponse
 import com.nikitahohulia.listeningplatform.dto.response.PublisherDtoResponse
-import com.nikitahohulia.listeningplatform.dto.response.SubscriptionDtoResponse
 import com.nikitahohulia.listeningplatform.dto.response.UserDtoResponse
 import com.nikitahohulia.listeningplatform.dto.response.toResponse
-import com.nikitahohulia.listeningplatform.entity.Subscription
 import com.nikitahohulia.listeningplatform.entity.User
 import com.nikitahohulia.listeningplatform.exception.DuplicateException
 import com.nikitahohulia.listeningplatform.exception.NotFoundException
 import com.nikitahohulia.listeningplatform.repository.CustomPostRepository
 import com.nikitahohulia.listeningplatform.repository.CustomUserRepository
 import com.nikitahohulia.listeningplatform.repository.PublisherRepository
-import com.nikitahohulia.listeningplatform.repository.SubscriptionRepository
 import org.bson.types.ObjectId
 import org.springframework.stereotype.Service
 
@@ -23,7 +20,6 @@ import org.springframework.stereotype.Service
 class UserServiceImpl(
     private val userRepository: CustomUserRepository,
     private val publisherRepository: PublisherRepository,
-    private val subscriptionRepository: SubscriptionRepository,
     private val postRepository: CustomPostRepository
 ) : UserService {
 
@@ -49,7 +45,7 @@ class UserServiceImpl(
         val newPublisher = publisherRepository.save(publisherDtoRequest.toEntity())
         val user = userRepository.findByUsername(username)
         if (user != null) {
-            user.id?.let { updateUser(it.toHexString(), user.copy(publisherId = newPublisher.id)) }
+            userRepository.save(user.copy(publisherId = newPublisher.id))
             return newPublisher.toResponse()
         }
         throw IllegalArgumentException("Database internal fail")
@@ -70,21 +66,17 @@ class UserServiceImpl(
 
     override fun deleteUserByUsername(username: String) {
         val user = getUserByUsername(username)
-        for (sub in user.subscriptions)
-            sub.id?.let { subscriptionRepository.deleteById(it) }
         return userRepository.deleteUserByUsername(username)
     }
 
-    override fun subscribe(username: String, publisherName: String): SubscriptionDtoResponse {
+    override fun subscribe(username: String, publisherName: String) {
         val user = getUserByUsername(username)
         val publisher = publisherRepository.findByPublisherName(publisherName)
             ?: throw NotFoundException("Publisher not found with given publisherName = $publisherName")
-
         if (user.id != null && publisher.id != null) {
-            val subscription = subscriptionRepository.save(Subscription(userId = user.id, publisherId = publisher.id))
-            user.subscriptions.add(subscription)
-            updateUser(user.id.toHexString(), user.copy())
-            return subscription.toResponse()
+            user.subscriptions.add(publisher.id)
+            userRepository.save(user.copy(id = user.id))
+            return
         }
         throw IllegalArgumentException("Database internal fail")
     }

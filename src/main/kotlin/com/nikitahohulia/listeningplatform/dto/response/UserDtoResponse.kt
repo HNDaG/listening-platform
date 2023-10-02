@@ -6,7 +6,7 @@ data class UserDtoResponse(
     val id: String,
     val username: String,
     val email: String,
-    val subscriptions: List<SubscriptionDtoResponse> = mutableListOf(),
+    val subscriptions: List<String> = mutableListOf(),
     val password: String,
     val publisherId: String?
 )
@@ -15,7 +15,7 @@ fun User.toResponse() = UserDtoResponse(
     id = id?.toHexString() ?: "",
     username = username,
     email = email,
-    subscriptions = subscriptions.map { it.toResponse() },
+    subscriptions = subscriptions.map { it.toHexString() },
     password = password,
     publisherId = publisherId?.toHexString() ?: ""
 )

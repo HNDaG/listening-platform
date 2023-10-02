@@ -4,7 +4,6 @@ import com.nikitahohulia.listeningplatform.dto.request.PublisherDtoRequest
 import com.nikitahohulia.listeningplatform.dto.request.UserDtoRequest
 import com.nikitahohulia.listeningplatform.dto.response.PostDtoResponse
 import com.nikitahohulia.listeningplatform.dto.response.PublisherDtoResponse
-import com.nikitahohulia.listeningplatform.dto.response.SubscriptionDtoResponse
 import com.nikitahohulia.listeningplatform.dto.response.UserDtoResponse
 import com.nikitahohulia.listeningplatform.entity.User
 
@@ -22,7 +21,7 @@ interface UserService {
 
     fun deleteUserByUsername(username: String)
 
-    fun subscribe(username: String, publisherName: String): SubscriptionDtoResponse
+    fun subscribe(username: String, publisherName: String)
 
     fun getPostsFromFollowedCreators(username: String, page: Int): List<PostDtoResponse>
 }

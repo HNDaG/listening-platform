@@ -5,7 +5,6 @@ import com.nikitahohulia.listeningplatform.dto.request.PublisherDtoRequest
 import com.nikitahohulia.listeningplatform.dto.request.UserDtoRequest
 import com.nikitahohulia.listeningplatform.dto.response.PostDtoResponse
 import com.nikitahohulia.listeningplatform.dto.response.PublisherDtoResponse
-import com.nikitahohulia.listeningplatform.dto.response.SubscriptionDtoResponse
 import com.nikitahohulia.listeningplatform.dto.response.UserDtoResponse
 import com.nikitahohulia.listeningplatform.entity.User
 import com.nikitahohulia.listeningplatform.service.UserServiceImpl
@@ -53,9 +52,9 @@ class UserController(private val userService: UserServiceImpl) {
     fun subscribe(
         @PathVariable("username") username: String,
         @PathVariable("publisherName") publisherName: String
-    ): ResponseEntity<SubscriptionDtoResponse> {
-        val newSubscription = userService.subscribe(username, publisherName)
-        return ResponseEntity.status(HttpStatus.CREATED).body(newSubscription)
+    ): ResponseEntity<UserDtoResponse> {
+        userService.subscribe(username, publisherName)
+        return ResponseEntity.status(HttpStatus.CREATED).build()
     }
 
     @PostMapping("/{username}/becomePublisher")
@@ -71,7 +70,7 @@ class UserController(private val userService: UserServiceImpl) {
     @GetMapping("/{username}/posts/{page}")
     fun getContentFromCreators(
         @PathVariable("username") username: String,
-        @PathVariable page: Int = 1
+        @PathVariable page: Int
     ): ResponseEntity<List<PostDtoResponse>> {
         val posts = userService.getPostsFromFollowedCreators(username, page)
         return ResponseEntity.status(

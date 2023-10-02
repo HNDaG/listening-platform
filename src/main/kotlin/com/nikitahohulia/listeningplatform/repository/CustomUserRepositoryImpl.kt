@@ -49,6 +49,6 @@ class CustomUserRepositoryImpl(private val mongoTemplate: MongoTemplate) : Custo
     override fun findPublisherIdsByUsername(username: String): List<ObjectId> {
         val user = findByUsername(username)
             ?: throw NotFoundException("User not found with given username = $username")
-        return user.subscriptions.map { it.publisherId }
+        return user.subscriptions.toList()
     }
 }

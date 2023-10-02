@@ -11,6 +11,6 @@ data class User(
     val username: String,
     val password: String,
     val email: String,
-    val subscriptions: MutableSet<Subscription> = mutableSetOf(),
+    val subscriptions: MutableSet<ObjectId> = mutableSetOf(),
     val publisherId: ObjectId? = null
 )
