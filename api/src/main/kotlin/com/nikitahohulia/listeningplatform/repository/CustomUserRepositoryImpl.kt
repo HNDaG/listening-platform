@@ -1,7 +1,6 @@
 package com.nikitahohulia.listeningplatform.repository
 
 import com.nikitahohulia.listeningplatform.entity.User
-import com.nikitahohulia.listeningplatform.exception.EntityNotFoundException
 import com.nikitahohulia.listeningplatform.exception.NotFoundException
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.MongoTemplate

@@ -15,7 +15,6 @@ import com.nikitahohulia.nats.NatsSubject.User.GET_ALL
 import com.nikitahohulia.nats.NatsSubject.User.GET_BY_ID
 import com.nikitahohulia.nats.NatsSubject.User.GET_BY_USERNAME
 import com.nikitahohulia.nats.NatsSubject.User.UPDATE
-import com.nikitahohulia.nats.commonmodels.user.CreateUserRequest
 import com.nikitahohulia.nats.commonmodels.user.User
 import com.nikitahohulia.nats.reqreply.user.create.proto.CreateUserRequestCommon
 import com.nikitahohulia.nats.reqreply.user.create.proto.CreateUserResponseCommon
