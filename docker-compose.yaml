@@ -9,13 +9,14 @@ services:
       nats-server:
         condition: service_started
     ports:
-      - 8080:8080
+      - "8080:8080"
 
   mongodb:
     image: mongo:latest
+    container_name: mongo-db
     environment:
-      - MONGO_INITDB_ROOT_PASSWORD=secret1
       - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=secret
       - MONGO_INITDB_DATABASE=mydb
     ports:
       - "27017:27017"
