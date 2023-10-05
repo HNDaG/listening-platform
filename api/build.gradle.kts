@@ -9,6 +9,8 @@ plugins {
 }
 
 dependencies {
+    implementation(project(":nats"))
+
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
@@ -17,7 +19,6 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("io.nats:jnats:2.16.14")
     implementation("com.google.protobuf:protobuf-java:3.24.3")
-    implementation(project(":nats"))
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
