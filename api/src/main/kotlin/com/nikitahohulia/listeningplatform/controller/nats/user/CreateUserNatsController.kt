@@ -18,6 +18,7 @@ class CreateUserNatsController(
     override val connection: Connection,
     private val userService: UserService
 ): NatsController<CreateUserRequestCommon, CreateUserResponseCommon> {
+
     override val subject = CREATE
     override val parser: Parser<CreateUserRequestCommon> = CreateUserRequestCommon.parser()
 

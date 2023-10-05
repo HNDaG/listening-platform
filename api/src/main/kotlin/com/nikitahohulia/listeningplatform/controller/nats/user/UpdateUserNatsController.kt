@@ -18,6 +18,7 @@ class UpdateUserNatsController(
     override val connection: Connection,
     private val userService: UserService
 ): NatsController<CreateUserRequestCommon, CreateUserResponseCommon> {
+
     override val subject = NatsSubject.User.UPDATE
     override val parser: Parser<CreateUserRequestCommon> = CreateUserRequestCommon.parser()
 

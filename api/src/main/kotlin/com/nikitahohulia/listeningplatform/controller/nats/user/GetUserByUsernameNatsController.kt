@@ -16,6 +16,7 @@ class GetUserByUsernameNatsController(
     override val connection: Connection,
     private val userService: UserService
 ) : NatsController<GetUserByUsernameRequestCommon, GetUserByUsernameResponseCommon> {
+
     override val subject = NatsSubject.User.GET_BY_USERNAME
     override val parser: Parser<GetUserByUsernameRequestCommon> = GetUserByUsernameRequestCommon.parser()
 

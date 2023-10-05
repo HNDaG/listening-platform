@@ -14,6 +14,7 @@ class DeleteUserByUsernameNatsController(
     override val connection: Connection,
     private val userService: UserService
 ) : NatsController<DeleteUserByUsernameRequestCommon, DeleteUserByUsernameResponseCommon> {
+
     override val subject = NatsSubject.User.DELETE_BY_USERNAME
     override val parser: Parser<DeleteUserByUsernameRequestCommon> = DeleteUserByUsernameRequestCommon.parser()
 

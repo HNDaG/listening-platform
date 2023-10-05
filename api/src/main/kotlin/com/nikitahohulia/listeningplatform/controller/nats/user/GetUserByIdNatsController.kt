@@ -16,13 +16,13 @@ class GetUserByIdNatsController(
     override val connection: Connection,
     private val userService: UserService
 ) : NatsController<GetUserByIdRequestCommon, GetUserByIdResponseCommon> {
+
     override val subject = NatsSubject.User.GET_BY_ID
     override val parser: Parser<GetUserByIdRequestCommon> = GetUserByIdRequestCommon.parser()
 
     override fun handle(request: GetUserByIdRequestCommon): GetUserByIdResponseCommon = runCatching {
-        val user = userService.getUserById(request.userId)
 
-        buildSuccessResponse(user.toProto())
+        buildSuccessResponse(userService.getUserById(request.userId).toProto())
 
     }.getOrElse { exception ->
         buildFailureResponse(exception.javaClass.simpleName, exception.toString())
