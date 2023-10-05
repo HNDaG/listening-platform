@@ -54,7 +54,7 @@ class NatsMovieControllerTests {
         val proto = userDtoRequest.toProto()
         val message = CreateUserRequestCommon.newBuilder().setUser(proto).build()
 
-        val future = natsConnection.requestWithTimeout(CREATE, message.toByteArray(), Duration.ofMillis(5000))
+        val future = natsConnection.requestWithTimeout(CREATE, message.toByteArray(), Duration.ofMillis(3000))
 
         val reply = CreateUserResponseCommon.parseFrom(future.get().data)
 
@@ -96,7 +96,7 @@ class NatsMovieControllerTests {
         val proto = updateUser.toProto()
         val message = CreateUserRequestCommon.newBuilder().setUser(proto).build()
 
-        val future = natsConnection.requestWithTimeout(UPDATE, message.toByteArray(), Duration.ofMillis(5000))
+        val future = natsConnection.requestWithTimeout(UPDATE, message.toByteArray(), Duration.ofMillis(3000))
 
         val reply = CreateUserResponseCommon.parseFrom(future.get().data)
 
@@ -125,7 +125,7 @@ class NatsMovieControllerTests {
     fun deleteUserByIdTestOk() {
         val message = DeleteUserByIdRequestCommon.newBuilder().setUserId(user.id).build()
 
-        val future = natsConnection.requestWithTimeout(DELETE_BY_ID, message.toByteArray(), Duration.ofMillis(3000000))
+        val future = natsConnection.requestWithTimeout(DELETE_BY_ID, message.toByteArray(), Duration.ofMillis(3000))
 
         val reply = DeleteUserByIdResponseCommon.parseFrom(future.get().data)
 
@@ -137,12 +137,14 @@ class NatsMovieControllerTests {
     fun deleteUserByUsernameTestFail() {
         val message = DeleteUserByUsernameRequestCommon.newBuilder().setUsername(user.username).build()
 
-        val future = natsConnection.requestWithTimeout(DELETE_BY_USERNAME, message.toByteArray(), Duration.ofMillis(3000000))
+        val future = natsConnection.requestWithTimeout(
+            DELETE_BY_USERNAME,
+            message.toByteArray(),
+            Duration.ofMillis(3000)
+        )
 
         val reply = DeleteUserByIdResponseCommon.parseFrom(future.get().data)
 
         Assertions.assertTrue(reply.hasFailure())
     }
-
-
 }

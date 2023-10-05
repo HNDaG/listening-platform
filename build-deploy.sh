@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "Building your application..."
-./gradlew assemle
+./gradlew assemble
 
 echo "Starting Docker Compose..."
 docker-compose up --build --force-recreate -d

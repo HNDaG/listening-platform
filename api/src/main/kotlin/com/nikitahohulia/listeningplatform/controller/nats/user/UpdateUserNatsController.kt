@@ -5,6 +5,7 @@ import com.nikitahohulia.listeningplatform.controller.nats.NatsController
 import com.nikitahohulia.listeningplatform.dto.request.toEntity
 import com.nikitahohulia.listeningplatform.dto.request.toRequest
 import com.nikitahohulia.listeningplatform.dto.response.toProto
+import com.nikitahohulia.listeningplatform.exception.EntityNotFoundException
 import com.nikitahohulia.listeningplatform.service.UserService
 import com.nikitahohulia.nats.NatsSubject
 import com.nikitahohulia.nats.commonmodels.user.User
@@ -24,7 +25,7 @@ class UpdateUserNatsController(
     override fun handle(request: CreateUserRequestCommon): CreateUserResponseCommon = runCatching {
         val user = request.user
         if (user.id == null)
-            throw RuntimeException("There is no id passed")
+            throw EntityNotFoundException("There is no id passed")
         val savedUser = userService.updateUser(user.id, user.toRequest().toEntity())
 
         buildSuccessResponse(savedUser.toProto())
