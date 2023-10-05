@@ -22,8 +22,7 @@ class CreateUserNatsController(
     override val parser: Parser<CreateUserRequestCommon> = CreateUserRequestCommon.parser()
 
     override fun handle(request: CreateUserRequestCommon): CreateUserResponseCommon = runCatching {
-        val user = request.user.toRequest()
-        val savedUser = userService.createUser(user)
+        val savedUser = userService.createUser(request.user.toRequest())
 
         buildSuccessResponse(savedUser.toProto())
 

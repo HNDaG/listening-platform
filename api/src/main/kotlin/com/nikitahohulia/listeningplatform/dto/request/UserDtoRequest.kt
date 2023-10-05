@@ -29,19 +29,18 @@ fun UserDtoRequest.toEntity() = com.nikitahohulia.listeningplatform.entity.User(
     password = password
 )
 
-fun UserDtoRequest.toProto(): User {
-    val newBuilder = User.newBuilder()
-    newBuilder
-        .setEmail(email)
-        .setPassword(password)
-        .setUsername(username)
-    if (id!=null) newBuilder.setId(id)
-    return newBuilder.build()
-}
-
 fun User.toRequest() = UserDtoRequest(
         id = id.takeIf { hasId() },
         username = username,
         email = email,
         password = password
+)
+
+fun User.toEntity() = com.nikitahohulia.listeningplatform.entity.User(
+    id = ObjectId(id).takeIf { hasId() },
+    username = username,
+    email = email,
+    password = password,
+    publisherId = ObjectId(publisherId).takeIf { hasId() },
+    subscriptions = subscriptionsList.map { ObjectId(it) }.toMutableSet()
 )

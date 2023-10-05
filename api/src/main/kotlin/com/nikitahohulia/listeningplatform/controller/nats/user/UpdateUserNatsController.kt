@@ -3,7 +3,6 @@ package com.nikitahohulia.listeningplatform.controller.nats.user
 import com.google.protobuf.Parser
 import com.nikitahohulia.listeningplatform.controller.nats.NatsController
 import com.nikitahohulia.listeningplatform.dto.request.toEntity
-import com.nikitahohulia.listeningplatform.dto.request.toRequest
 import com.nikitahohulia.listeningplatform.dto.response.toProto
 import com.nikitahohulia.listeningplatform.exception.EntityNotFoundException
 import com.nikitahohulia.listeningplatform.service.UserService
@@ -23,10 +22,9 @@ class UpdateUserNatsController(
     override val parser: Parser<CreateUserRequestCommon> = CreateUserRequestCommon.parser()
 
     override fun handle(request: CreateUserRequestCommon): CreateUserResponseCommon = runCatching {
-        val user = request.user
-        if (user.id == null)
+        if (request.user.id == null)
             throw EntityNotFoundException("There is no id passed")
-        val savedUser = userService.updateUser(user.id, user.toRequest().toEntity())
+        val savedUser = userService.updateUser(request.user.id, request.user.toEntity())
 
         buildSuccessResponse(savedUser.toProto())
 

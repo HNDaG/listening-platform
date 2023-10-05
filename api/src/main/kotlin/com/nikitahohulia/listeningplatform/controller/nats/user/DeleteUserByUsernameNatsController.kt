@@ -18,8 +18,7 @@ class DeleteUserByUsernameNatsController(
     override val parser: Parser<DeleteUserByUsernameRequestCommon> = DeleteUserByUsernameRequestCommon.parser()
 
     override fun handle(request: DeleteUserByUsernameRequestCommon): DeleteUserByUsernameResponseCommon = runCatching {
-        val username: String = request.username
-        userService.deleteUserByUsername(username)
+        userService.deleteUserByUsername(request.username)
 
         buildSuccessResponse()
 

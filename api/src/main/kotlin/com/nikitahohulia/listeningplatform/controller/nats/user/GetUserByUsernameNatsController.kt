@@ -20,8 +20,7 @@ class GetUserByUsernameNatsController(
     override val parser: Parser<GetUserByUsernameRequestCommon> = GetUserByUsernameRequestCommon.parser()
 
     override fun handle(request: GetUserByUsernameRequestCommon): GetUserByUsernameResponseCommon = runCatching {
-        val username: String = request.username
-        val user = userService.getUserByUsername(username)
+        val user = userService.getUserByUsername(request.username)
 
         buildSuccessResponse(user.toProto())
 

@@ -19,6 +19,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("io.nats:jnats:2.16.14")
     implementation("com.google.protobuf:protobuf-java:3.24.3")
+    implementation("com.willowtreeapps.assertk:assertk:0.27.0")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
