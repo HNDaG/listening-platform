@@ -3,9 +3,9 @@ package com.nikitahohulia.listeningplatform.controller.nats.user
 import com.google.protobuf.Parser
 import com.nikitahohulia.listeningplatform.controller.nats.NatsController
 import com.nikitahohulia.listeningplatform.service.UserService
-import com.nikitahohulia.nats.NatsSubject
-import com.nikitahohulia.nats.reqreply.user.get_by_id.proto.DeleteUserByIdRequest
-import com.nikitahohulia.nats.reqreply.user.get_by_id.proto.DeleteUserByIdResponse
+import com.nikitahohulia.api.internal.v2.usersvc.NatsSubject
+import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.user.get_by_id.proto.DeleteUserByIdRequest
+import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.user.get_by_id.proto.DeleteUserByIdResponse
 import io.nats.client.Connection
 import org.springframework.stereotype.Component
 

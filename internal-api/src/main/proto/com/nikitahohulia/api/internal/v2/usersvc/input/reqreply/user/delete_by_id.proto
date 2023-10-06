@@ -1,10 +1,10 @@
 syntax = "proto3";
 
-package com.nikitahohulia.nats.reqreply.user.get_by_id.proto;
+package com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.user.get_by_id.proto;
 
 option java_multiple_files = true;
 
-import "com/nikitahohulia/nats/commonmodels/user/user.proto";
+import "com/nikitahohulia/api/internal/v2/usersvc/commonmodels/user/user.proto";
 
 message DeleteUserByIdRequest {
   string userId = 1;

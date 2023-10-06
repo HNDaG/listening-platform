@@ -5,12 +5,12 @@ import com.nikitahohulia.listeningplatform.controller.nats.NatsController
 import com.nikitahohulia.listeningplatform.dto.request.toRequest
 import com.nikitahohulia.listeningplatform.dto.response.toProto
 import com.nikitahohulia.listeningplatform.service.UserService
-import com.nikitahohulia.nats.NatsSubject.User.CREATE
-import com.nikitahohulia.nats.reqreply.user.create.proto.CreateUserRequest
-import com.nikitahohulia.nats.reqreply.user.create.proto.CreateUserResponse
+import com.nikitahohulia.api.internal.v2.usersvc.NatsSubject.User.CREATE
 import io.nats.client.Connection
 import org.springframework.stereotype.Component
-import com.nikitahohulia.nats.commonmodels.user.User
+import com.nikitahohulia.api.internal.v2.usersvc.commonmodels.user.User
+import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.create.proto.CreateUserRequest
+import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.create.proto.CreateUserResponse
 
 
 @Component

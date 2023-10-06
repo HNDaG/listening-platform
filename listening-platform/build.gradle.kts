@@ -9,7 +9,7 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":nats-api"))
+    implementation(project(":internal-api"))
 
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-validation")
@@ -23,6 +23,7 @@ dependencies {
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     implementation("net.datafaker:datafaker:2.0.1")
+
 
 }
 
