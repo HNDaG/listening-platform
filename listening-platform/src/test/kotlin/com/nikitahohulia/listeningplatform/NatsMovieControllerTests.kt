@@ -30,7 +30,6 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import com.google.protobuf.GeneratedMessageV3
 import com.google.protobuf.Parser
-import com.mongodb.MongoException
 import com.nikitahohulia.listeningplatform.entity.User
 import com.nikitahohulia.nats.commonmodels.user.UserList
 import com.nikitahohulia.nats.reqreply.user.create.proto.UpdateUserRequest
@@ -76,7 +75,7 @@ class NatsMovieControllerTests {
 
         val actual = doRequest(CREATE, message, CreateUserResponse.parser())
         val expected = CreateUserResponse.newBuilder().apply {
-            successBuilder.setUser(proto.setId(actual))
+            successBuilder.setUser(proto.setIdFromCreateUserResponse(actual))
         }.build()
 
         assertThat(expected).isEqualTo(actual)
@@ -99,7 +98,7 @@ class NatsMovieControllerTests {
 
     @Test
     fun getUserByIdTestOk() {
-        val user = userRepository.save(getUserToAdd()) ?: throw MongoException("Failed to save user")
+        val user = userRepository.save(getUserToAdd())!!
 
         val message = GetUserByIdRequest.newBuilder().setUserId(user.id?.toHexString()).build()
 
@@ -119,7 +118,7 @@ class NatsMovieControllerTests {
 
     @Test
     fun updateUserTestOk() {
-        val user = userRepository.save(getUserToAdd()) ?: throw MongoException("Failed to save user")
+        val user = userRepository.save(getUserToAdd())!!
         val updatedProto = getUserToAdd().copy(id = user.id, publisherId = user.publisherId).toProto()
 
         val message = UpdateUserRequest.newBuilder().setUser(updatedProto).build()
@@ -134,7 +133,7 @@ class NatsMovieControllerTests {
 
     @Test
     fun getUserByUsernameTestOk() {
-        val user = userRepository.save(getUserToAdd()) ?: throw MongoException("Failed to save user")
+        val user = userRepository.save(getUserToAdd())!!
 
         val message = GetUserByUsernameRequest.newBuilder().setUsername(user.username).build()
 
@@ -154,7 +153,7 @@ class NatsMovieControllerTests {
 
     @Test
     fun deleteUserByIdTestOk() {
-        val user = userRepository.save(getUserToAdd()) ?: throw MongoException("Failed to save user")
+        val user = userRepository.save(getUserToAdd())!!
 
         val message = DeleteUserByIdRequest.newBuilder().setUserId(user.id?.toHexString()).build()
 
@@ -169,7 +168,7 @@ class NatsMovieControllerTests {
 
     @Test
     fun deleteUserByUsernameTestOk() {
-        val user = userRepository.save(getUserToAdd()) ?: throw MongoException("Failed to save user")
+        val user = userRepository.save(getUserToAdd())!!
 
         val message = DeleteUserByUsernameRequest.newBuilder().setUsername(user.username).build()
 
@@ -195,7 +194,7 @@ class NatsMovieControllerTests {
         return parser.parseFrom(response.get().data)
     }
 
-    private fun NatsUser.setId(response: CreateUserResponse): NatsUser {
+    private fun NatsUser.setIdFromCreateUserResponse(response: CreateUserResponse): NatsUser {
         val builder = NatsUser.newBuilder()
             .setId(response.success.user.id)
             .setEmail(email)
