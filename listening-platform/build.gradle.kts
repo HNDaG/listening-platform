@@ -24,7 +24,6 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     implementation("net.datafaker:datafaker:2.0.1")
 
-
 }
 
 noArg {
