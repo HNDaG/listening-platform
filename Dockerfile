@@ -2,7 +2,7 @@ FROM amazoncorretto:17.0.8-alpine3.18
 
 WORKDIR /app
 
-ARG JAR_FILE=api/build/libs/api-*.jar
+ARG JAR_FILE=listening-platform/build/libs/api-*.jar
 
 EXPOSE 8080
 

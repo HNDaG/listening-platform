@@ -1,5 +1,5 @@
 rootProject.name = "listeningplatform"
 include(
-    "api",
-    "nats"
+    "listening-platform",
+    "nats-api"
 )
