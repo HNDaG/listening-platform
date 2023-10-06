@@ -6,20 +6,35 @@ services:
     depends_on:
       mongodb:
         condition: service_healthy
+      nats-server:
+        condition: service_started
     ports:
-      - 8080:8080
+      - "8080:8080"
 
   mongodb:
     image: mongo:latest
+    container_name: mongo-db
     environment:
-      - MONGO_INITDB_ROOT_PASSWORD=secret1
       - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=secret
       - MONGO_INITDB_DATABASE=mydb
     ports:
-      - 27017:27017
+      - "27017:27017"
     healthcheck:
       test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
-      timeout: 5s
-      retries: 10
+      interval: 1s
+      timeout: 1s
+      retries: 5
     volumes:
       - ./mongodb_data:/data/db
+
+  nats-server:
+    image: nats:latest
+    container_name: nats-server
+    ports:
+      - "4222:4222"
+    healthcheck:
+      test: [ "CMD", "nats", "ping" ]
+      interval: 1s
+      timeout: 1s
+      retries: 5
