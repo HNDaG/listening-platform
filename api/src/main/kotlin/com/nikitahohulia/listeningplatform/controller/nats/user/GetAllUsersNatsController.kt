@@ -6,8 +6,8 @@ import com.nikitahohulia.listeningplatform.dto.response.toProto
 import com.nikitahohulia.listeningplatform.service.UserService
 import com.nikitahohulia.nats.NatsSubject
 import com.nikitahohulia.nats.commonmodels.user.User
-import com.nikitahohulia.nats.reqreply.user.get_all.proto.GetAllUsersRequestCommon
-import com.nikitahohulia.nats.reqreply.user.get_all.proto.GetAllUsersResponseCommon
+import com.nikitahohulia.nats.reqreply.user.get_all.proto.GetAllUsersRequest
+import com.nikitahohulia.nats.reqreply.user.get_all.proto.GetAllUsersResponse
 import io.nats.client.Connection
 import org.springframework.stereotype.Component
 
@@ -15,12 +15,12 @@ import org.springframework.stereotype.Component
 class GetAllUsersNatsController(
     override val connection: Connection,
     private val userService: UserService
-): NatsController<GetAllUsersRequestCommon, GetAllUsersResponseCommon> {
+): NatsController<GetAllUsersRequest, GetAllUsersResponse> {
 
     override val subject = NatsSubject.User.GET_ALL
-    override val parser: Parser<GetAllUsersRequestCommon> = GetAllUsersRequestCommon.parser()
+    override val parser: Parser<GetAllUsersRequest> = GetAllUsersRequest.parser()
 
-    override fun handle(request: GetAllUsersRequestCommon): GetAllUsersResponseCommon = runCatching {
+    override fun handle(request: GetAllUsersRequest): GetAllUsersResponse = runCatching {
 
         buildSuccessResponse(userService.getAllUsers().map { it.toProto() })
 
@@ -28,15 +28,15 @@ class GetAllUsersNatsController(
         buildFailureResponse(exception.javaClass.simpleName, exception.toString())
     }
 
-    private fun buildSuccessResponse(userList: List<User>): GetAllUsersResponseCommon =
-        GetAllUsersResponseCommon.newBuilder().apply {
+    private fun buildSuccessResponse(userList: List<User>): GetAllUsersResponse =
+        GetAllUsersResponse.newBuilder().apply {
             successBuilder
                 .usersBuilder
                 .addAllUsers(userList)
         }.build()
 
-    private fun buildFailureResponse(exception: String, message: String): GetAllUsersResponseCommon =
-        GetAllUsersResponseCommon.newBuilder().apply {
+    private fun buildFailureResponse(exception: String, message: String): GetAllUsersResponse =
+        GetAllUsersResponse.newBuilder().apply {
             failureBuilder
                 .setMessage("GetAllUsers failed by $exception: $message")
         }.build()

@@ -4,8 +4,8 @@ import com.google.protobuf.Parser
 import com.nikitahohulia.listeningplatform.controller.nats.NatsController
 import com.nikitahohulia.listeningplatform.service.UserService
 import com.nikitahohulia.nats.NatsSubject
-import com.nikitahohulia.nats.reqreply.user.get_by_id.proto.DeleteUserByUsernameRequestCommon
-import com.nikitahohulia.nats.reqreply.user.get_by_id.proto.DeleteUserByUsernameResponseCommon
+import com.nikitahohulia.nats.reqreply.user.get_by_id.proto.DeleteUserByUsernameRequest
+import com.nikitahohulia.nats.reqreply.user.get_by_id.proto.DeleteUserByUsernameResponse
 import io.nats.client.Connection
 import org.springframework.stereotype.Component
 
@@ -13,12 +13,12 @@ import org.springframework.stereotype.Component
 class DeleteUserByUsernameNatsController(
     override val connection: Connection,
     private val userService: UserService
-) : NatsController<DeleteUserByUsernameRequestCommon, DeleteUserByUsernameResponseCommon> {
+) : NatsController<DeleteUserByUsernameRequest, DeleteUserByUsernameResponse> {
 
     override val subject = NatsSubject.User.DELETE_BY_USERNAME
-    override val parser: Parser<DeleteUserByUsernameRequestCommon> = DeleteUserByUsernameRequestCommon.parser()
+    override val parser: Parser<DeleteUserByUsernameRequest> = DeleteUserByUsernameRequest.parser()
 
-    override fun handle(request: DeleteUserByUsernameRequestCommon): DeleteUserByUsernameResponseCommon = runCatching {
+    override fun handle(request: DeleteUserByUsernameRequest): DeleteUserByUsernameResponse = runCatching {
         userService.deleteUserByUsername(request.username)
 
         buildSuccessResponse()
@@ -27,13 +27,13 @@ class DeleteUserByUsernameNatsController(
         buildFailureResponse(exception.javaClass.simpleName, exception.toString())
     }
 
-    private fun buildSuccessResponse(): DeleteUserByUsernameResponseCommon =
-        DeleteUserByUsernameResponseCommon.newBuilder().apply {
+    private fun buildSuccessResponse(): DeleteUserByUsernameResponse =
+        DeleteUserByUsernameResponse.newBuilder().apply {
             successBuilder.build()
         }.build()
 
-    private fun buildFailureResponse(exception: String, message: String): DeleteUserByUsernameResponseCommon =
-        DeleteUserByUsernameResponseCommon.newBuilder().apply {
+    private fun buildFailureResponse(exception: String, message: String): DeleteUserByUsernameResponse =
+        DeleteUserByUsernameResponse.newBuilder().apply {
             failureBuilder
                 .setMessage("User deleteByUsername failed by $exception: $message")
         }.build()

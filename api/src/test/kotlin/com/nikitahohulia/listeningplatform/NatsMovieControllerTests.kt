@@ -14,16 +14,16 @@ import com.nikitahohulia.nats.NatsSubject.User.GET_ALL
 import com.nikitahohulia.nats.NatsSubject.User.GET_BY_ID
 import com.nikitahohulia.nats.NatsSubject.User.GET_BY_USERNAME
 import com.nikitahohulia.nats.NatsSubject.User.UPDATE
-import com.nikitahohulia.nats.reqreply.user.create.proto.CreateUserRequestCommon
-import com.nikitahohulia.nats.reqreply.user.create.proto.CreateUserResponseCommon
-import com.nikitahohulia.nats.reqreply.user.get_all.proto.GetAllUsersResponseCommon
-import com.nikitahohulia.nats.reqreply.user.get_by_id.proto.DeleteUserByIdRequestCommon
-import com.nikitahohulia.nats.reqreply.user.get_by_id.proto.DeleteUserByIdResponseCommon
-import com.nikitahohulia.nats.reqreply.user.get_by_id.proto.DeleteUserByUsernameRequestCommon
-import com.nikitahohulia.nats.reqreply.user.get_by_id.proto.GetUserByIdRequestCommon
-import com.nikitahohulia.nats.reqreply.user.get_by_id.proto.GetUserByIdResponseCommon
-import com.nikitahohulia.nats.reqreply.user.get_by_id.proto.GetUserByUsernameRequestCommon
-import com.nikitahohulia.nats.reqreply.user.get_by_id.proto.GetUserByUsernameResponseCommon
+import com.nikitahohulia.nats.reqreply.user.create.proto.CreateUserRequest
+import com.nikitahohulia.nats.reqreply.user.create.proto.CreateUserResponse
+import com.nikitahohulia.nats.reqreply.user.get_all.proto.GetAllUsersResponse
+import com.nikitahohulia.nats.reqreply.user.get_by_id.proto.DeleteUserByIdRequest
+import com.nikitahohulia.nats.reqreply.user.get_by_id.proto.DeleteUserByIdResponse
+import com.nikitahohulia.nats.reqreply.user.get_by_id.proto.DeleteUserByUsernameRequest
+import com.nikitahohulia.nats.reqreply.user.get_by_id.proto.GetUserByIdRequest
+import com.nikitahohulia.nats.reqreply.user.get_by_id.proto.GetUserByIdResponse
+import com.nikitahohulia.nats.reqreply.user.get_by_id.proto.GetUserByUsernameRequest
+import com.nikitahohulia.nats.reqreply.user.get_by_id.proto.GetUserByUsernameResponse
 import org.bson.types.ObjectId
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Order
@@ -34,10 +34,10 @@ import assertk.assertions.isNotNull
 import com.google.protobuf.GeneratedMessageV3
 import com.google.protobuf.Parser
 import com.nikitahohulia.nats.commonmodels.user.UserList
-import com.nikitahohulia.nats.reqreply.user.create.proto.UpdateUserRequestCommon
-import com.nikitahohulia.nats.reqreply.user.create.proto.UpdateUserResponseCommon
-import com.nikitahohulia.nats.reqreply.user.get_all.proto.GetAllUsersRequestCommon
-import com.nikitahohulia.nats.reqreply.user.get_by_id.proto.DeleteUserByUsernameResponseCommon
+import com.nikitahohulia.nats.reqreply.user.create.proto.UpdateUserRequest
+import com.nikitahohulia.nats.reqreply.user.create.proto.UpdateUserResponse
+import com.nikitahohulia.nats.reqreply.user.get_all.proto.GetAllUsersRequest
+import com.nikitahohulia.nats.reqreply.user.get_by_id.proto.DeleteUserByUsernameResponse
 
 @SpringBootTest
 class NatsMovieControllerTests {
@@ -66,10 +66,10 @@ class NatsMovieControllerTests {
     @Test
     fun addUserTestOk() {
         val proto = userToAdd.toProto()
-        val message = CreateUserRequestCommon.newBuilder().setUser(proto).build()
+        val message = CreateUserRequest.newBuilder().setUser(proto).build()
 
-        val actual = doRequest(CREATE, message, CreateUserResponseCommon.parser())
-        val expected = CreateUserResponseCommon.newBuilder().apply {
+        val actual = doRequest(CREATE, message, CreateUserResponse.parser())
+        val expected = CreateUserResponse.newBuilder().apply {
             successBuilder.setUser(proto)
         }.build()
 
@@ -80,10 +80,10 @@ class NatsMovieControllerTests {
     fun getAllUsersTestOk() {
         val actual = doRequest(
             GET_ALL,
-            GetAllUsersRequestCommon.newBuilder().build(),
-            GetAllUsersResponseCommon.parser()
+            GetAllUsersRequest.newBuilder().build(),
+            GetAllUsersResponse.parser()
         )
-        val expected = GetAllUsersResponseCommon.newBuilder().apply {
+        val expected = GetAllUsersResponse.newBuilder().apply {
             successBuilder
                 .setUsers(UserList.newBuilder().addAllUsers(emptyList()).build())
         }.build()
@@ -95,15 +95,15 @@ class NatsMovieControllerTests {
     fun getUserByIdTestOk() {
         userRepository.save(userToAdd)
 
-        val message = GetUserByIdRequestCommon.newBuilder().setUserId(userId).build()
+        val message = GetUserByIdRequest.newBuilder().setUserId(userId).build()
 
         val actual = doRequest(
             GET_BY_ID,
             message,
-            GetUserByIdResponseCommon.parser()
+            GetUserByIdResponse.parser()
         )
 
-        val expected = GetUserByIdResponseCommon.newBuilder().apply {
+        val expected = GetUserByIdResponse.newBuilder().apply {
             successBuilder
                 .setUser(userToAdd.toProto())
         }.build()
@@ -121,10 +121,10 @@ class NatsMovieControllerTests {
             publisherId = ObjectId("651c6a8763d50fb3f7f1ec7c")
         ).toProto()
 
-        val message = UpdateUserRequestCommon.newBuilder().setUser(proto).build()
+        val message = UpdateUserRequest.newBuilder().setUser(proto).build()
 
-        val actual = doRequest(UPDATE, message, UpdateUserResponseCommon.parser())
-        val expected = UpdateUserResponseCommon.newBuilder().apply {
+        val actual = doRequest(UPDATE, message, UpdateUserResponse.parser())
+        val expected = UpdateUserResponse.newBuilder().apply {
             successBuilder.setUser(proto)
         }.build()
 
@@ -135,15 +135,15 @@ class NatsMovieControllerTests {
     fun getUserByUsernameTestOk() {
         userRepository.save(userToAdd)
 
-        val message = GetUserByUsernameRequestCommon.newBuilder().setUsername(userToAdd.username).build()
+        val message = GetUserByUsernameRequest.newBuilder().setUsername(userToAdd.username).build()
 
         val actual = doRequest(
             GET_BY_USERNAME,
             message,
-            GetUserByUsernameResponseCommon.parser()
+            GetUserByUsernameResponse.parser()
         )
 
-        val expected = GetUserByUsernameResponseCommon.newBuilder().apply {
+        val expected = GetUserByUsernameResponse.newBuilder().apply {
             successBuilder
                 .setUser(userToAdd.toProto())
         }.build()
@@ -156,12 +156,12 @@ class NatsMovieControllerTests {
     fun deleteUserByIdTestOk() {
         userRepository.save(userToAdd)
 
-        val message = DeleteUserByIdRequestCommon.newBuilder().setUserId(userId).build()
+        val message = DeleteUserByIdRequest.newBuilder().setUserId(userId).build()
 
         val actual = doRequest(
             DELETE_BY_ID,
             message,
-            DeleteUserByIdResponseCommon.parser()
+            DeleteUserByIdResponse.parser()
         )
 
         assertThat(actual.success).isNotNull()
@@ -171,12 +171,12 @@ class NatsMovieControllerTests {
     fun deleteUserByUsernameTestFail() {
         userRepository.save(userToAdd)
 
-        val message = DeleteUserByUsernameRequestCommon.newBuilder().setUsername(userToAdd.username).build()
+        val message = DeleteUserByUsernameRequest.newBuilder().setUsername(userToAdd.username).build()
 
         val actual = doRequest(
             DELETE_BY_USERNAME,
             message,
-            DeleteUserByUsernameResponseCommon.parser()
+            DeleteUserByUsernameResponse.parser()
         )
 
         assertThat(actual.success).isNotNull()

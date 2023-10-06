@@ -6,8 +6,8 @@ import com.nikitahohulia.listeningplatform.dto.response.toProto
 import com.nikitahohulia.listeningplatform.service.UserService
 import com.nikitahohulia.nats.NatsSubject
 import com.nikitahohulia.nats.commonmodels.user.User
-import com.nikitahohulia.nats.reqreply.user.get_by_id.proto.GetUserByUsernameRequestCommon
-import com.nikitahohulia.nats.reqreply.user.get_by_id.proto.GetUserByUsernameResponseCommon
+import com.nikitahohulia.nats.reqreply.user.get_by_id.proto.GetUserByUsernameRequest
+import com.nikitahohulia.nats.reqreply.user.get_by_id.proto.GetUserByUsernameResponse
 import io.nats.client.Connection
 import org.springframework.stereotype.Component
 
@@ -15,12 +15,12 @@ import org.springframework.stereotype.Component
 class GetUserByUsernameNatsController(
     override val connection: Connection,
     private val userService: UserService
-) : NatsController<GetUserByUsernameRequestCommon, GetUserByUsernameResponseCommon> {
+) : NatsController<GetUserByUsernameRequest, GetUserByUsernameResponse> {
 
     override val subject = NatsSubject.User.GET_BY_USERNAME
-    override val parser: Parser<GetUserByUsernameRequestCommon> = GetUserByUsernameRequestCommon.parser()
+    override val parser: Parser<GetUserByUsernameRequest> = GetUserByUsernameRequest.parser()
 
-    override fun handle(request: GetUserByUsernameRequestCommon): GetUserByUsernameResponseCommon = runCatching {
+    override fun handle(request: GetUserByUsernameRequest): GetUserByUsernameResponse = runCatching {
         val user = userService.getUserByUsername(request.username)
 
         buildSuccessResponse(user.toProto())
@@ -29,14 +29,14 @@ class GetUserByUsernameNatsController(
         buildFailureResponse(exception.javaClass.simpleName, exception.toString())
     }
 
-    private fun buildSuccessResponse(user: User): GetUserByUsernameResponseCommon =
-        GetUserByUsernameResponseCommon.newBuilder().apply {
+    private fun buildSuccessResponse(user: User): GetUserByUsernameResponse =
+        GetUserByUsernameResponse.newBuilder().apply {
             successBuilder
                 .setUser(user)
         }.build()
 
-    private fun buildFailureResponse(exception: String, message: String): GetUserByUsernameResponseCommon =
-        GetUserByUsernameResponseCommon.newBuilder().apply {
+    private fun buildFailureResponse(exception: String, message: String): GetUserByUsernameResponse =
+        GetUserByUsernameResponse.newBuilder().apply {
             failureBuilder
                 .setMessage("GetUserByUsername failed by $exception: $message")
         }.build()

@@ -6,8 +6,8 @@ import com.nikitahohulia.listeningplatform.dto.request.toRequest
 import com.nikitahohulia.listeningplatform.dto.response.toProto
 import com.nikitahohulia.listeningplatform.service.UserService
 import com.nikitahohulia.nats.NatsSubject.User.CREATE
-import com.nikitahohulia.nats.reqreply.user.create.proto.CreateUserRequestCommon
-import com.nikitahohulia.nats.reqreply.user.create.proto.CreateUserResponseCommon
+import com.nikitahohulia.nats.reqreply.user.create.proto.CreateUserRequest
+import com.nikitahohulia.nats.reqreply.user.create.proto.CreateUserResponse
 import io.nats.client.Connection
 import org.springframework.stereotype.Component
 import com.nikitahohulia.nats.commonmodels.user.User
@@ -17,12 +17,12 @@ import com.nikitahohulia.nats.commonmodels.user.User
 class CreateUserNatsController(
     override val connection: Connection,
     private val userService: UserService
-): NatsController<CreateUserRequestCommon, CreateUserResponseCommon> {
+): NatsController<CreateUserRequest, CreateUserResponse> {
 
     override val subject = CREATE
-    override val parser: Parser<CreateUserRequestCommon> = CreateUserRequestCommon.parser()
+    override val parser: Parser<CreateUserRequest> = CreateUserRequest.parser()
 
-    override fun handle(request: CreateUserRequestCommon): CreateUserResponseCommon = runCatching {
+    override fun handle(request: CreateUserRequest): CreateUserResponse = runCatching {
         val savedUser = userService.createUser(request.user.toRequest())
 
         buildSuccessResponse(savedUser.toProto())
@@ -31,14 +31,14 @@ class CreateUserNatsController(
         buildFailureResponse(exception.javaClass.simpleName, exception.toString())
     }
 
-    private fun buildSuccessResponse(user: User): CreateUserResponseCommon =
-        CreateUserResponseCommon.newBuilder().apply {
+    private fun buildSuccessResponse(user: User): CreateUserResponse =
+        CreateUserResponse.newBuilder().apply {
             successBuilder
                 .setUser(user)
         }.build()
 
-    private fun buildFailureResponse(exception: String, message: String): CreateUserResponseCommon =
-        CreateUserResponseCommon.newBuilder().apply {
+    private fun buildFailureResponse(exception: String, message: String): CreateUserResponse =
+        CreateUserResponse.newBuilder().apply {
             failureBuilder
                 .setMessage("CreateUser failed by $exception: $message")
         }.build()

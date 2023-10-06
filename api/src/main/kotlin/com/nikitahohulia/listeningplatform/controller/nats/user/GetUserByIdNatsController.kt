@@ -6,8 +6,8 @@ import com.nikitahohulia.listeningplatform.dto.response.toProto
 import com.nikitahohulia.listeningplatform.service.UserService
 import com.nikitahohulia.nats.NatsSubject
 import com.nikitahohulia.nats.commonmodels.user.User
-import com.nikitahohulia.nats.reqreply.user.get_by_id.proto.GetUserByIdRequestCommon
-import com.nikitahohulia.nats.reqreply.user.get_by_id.proto.GetUserByIdResponseCommon
+import com.nikitahohulia.nats.reqreply.user.get_by_id.proto.GetUserByIdRequest
+import com.nikitahohulia.nats.reqreply.user.get_by_id.proto.GetUserByIdResponse
 import io.nats.client.Connection
 import org.springframework.stereotype.Component
 
@@ -15,12 +15,12 @@ import org.springframework.stereotype.Component
 class GetUserByIdNatsController(
     override val connection: Connection,
     private val userService: UserService
-) : NatsController<GetUserByIdRequestCommon, GetUserByIdResponseCommon> {
+) : NatsController<GetUserByIdRequest, GetUserByIdResponse> {
 
     override val subject = NatsSubject.User.GET_BY_ID
-    override val parser: Parser<GetUserByIdRequestCommon> = GetUserByIdRequestCommon.parser()
+    override val parser: Parser<GetUserByIdRequest> = GetUserByIdRequest.parser()
 
-    override fun handle(request: GetUserByIdRequestCommon): GetUserByIdResponseCommon = runCatching {
+    override fun handle(request: GetUserByIdRequest): GetUserByIdResponse = runCatching {
 
         buildSuccessResponse(userService.getUserById(request.userId).toProto())
 
@@ -28,14 +28,14 @@ class GetUserByIdNatsController(
         buildFailureResponse(exception.javaClass.simpleName, exception.toString())
     }
 
-    private fun buildSuccessResponse(user: User): GetUserByIdResponseCommon =
-        GetUserByIdResponseCommon.newBuilder().apply {
+    private fun buildSuccessResponse(user: User): GetUserByIdResponse =
+        GetUserByIdResponse.newBuilder().apply {
             successBuilder
                 .setUser(user)
         }.build()
 
-    private fun buildFailureResponse(exception: String, message: String): GetUserByIdResponseCommon =
-        GetUserByIdResponseCommon.newBuilder().apply {
+    private fun buildFailureResponse(exception: String, message: String): GetUserByIdResponse =
+        GetUserByIdResponse.newBuilder().apply {
             failureBuilder
                 .setMessage("GetUserById failed by $exception: $message")
         }.build()
