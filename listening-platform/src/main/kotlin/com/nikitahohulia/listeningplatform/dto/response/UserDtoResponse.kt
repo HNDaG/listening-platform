@@ -1,7 +1,7 @@
 package com.nikitahohulia.listeningplatform.dto.response
 
 import com.nikitahohulia.listeningplatform.entity.User
-import com.nikitahohulia.nats.commonmodels.user.User as NatsUser
+import com.nikitahohulia.api.internal.v2.usersvc.commonmodels.user.User as NatsUser
 
 
 data class UserDtoResponse(

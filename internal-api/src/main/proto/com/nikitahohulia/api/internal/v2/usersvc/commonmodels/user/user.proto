@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package com.nikitahohulia.nats.commonmodels.user;
+package com.nikitahohulia.api.internal.v2.usersvc.commonmodels.user;
 
 import "google/protobuf/timestamp.proto";
 

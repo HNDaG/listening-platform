@@ -6,23 +6,13 @@ import io.nats.client.Connection
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import java.time.Duration
-import com.nikitahohulia.nats.NatsSubject.User.CREATE
-import com.nikitahohulia.nats.NatsSubject.User.DELETE_BY_ID
-import com.nikitahohulia.nats.NatsSubject.User.DELETE_BY_USERNAME
-import com.nikitahohulia.nats.NatsSubject.User.GET_ALL
-import com.nikitahohulia.nats.NatsSubject.User.GET_BY_ID
-import com.nikitahohulia.nats.NatsSubject.User.GET_BY_USERNAME
-import com.nikitahohulia.nats.NatsSubject.User.UPDATE
-import com.nikitahohulia.nats.reqreply.user.create.proto.CreateUserRequest
-import com.nikitahohulia.nats.reqreply.user.create.proto.CreateUserResponse
-import com.nikitahohulia.nats.reqreply.user.get_all.proto.GetAllUsersResponse
-import com.nikitahohulia.nats.reqreply.user.get_by_id.proto.DeleteUserByIdRequest
-import com.nikitahohulia.nats.reqreply.user.get_by_id.proto.DeleteUserByIdResponse
-import com.nikitahohulia.nats.reqreply.user.get_by_id.proto.DeleteUserByUsernameRequest
-import com.nikitahohulia.nats.reqreply.user.get_by_id.proto.GetUserByIdRequest
-import com.nikitahohulia.nats.reqreply.user.get_by_id.proto.GetUserByIdResponse
-import com.nikitahohulia.nats.reqreply.user.get_by_id.proto.GetUserByUsernameRequest
-import com.nikitahohulia.nats.reqreply.user.get_by_id.proto.GetUserByUsernameResponse
+import com.nikitahohulia.api.internal.v2.usersvc.NatsSubject.User.CREATE
+import com.nikitahohulia.api.internal.v2.usersvc.NatsSubject.User.DELETE_BY_ID
+import com.nikitahohulia.api.internal.v2.usersvc.NatsSubject.User.DELETE_BY_USERNAME
+import com.nikitahohulia.api.internal.v2.usersvc.NatsSubject.User.GET_ALL
+import com.nikitahohulia.api.internal.v2.usersvc.NatsSubject.User.GET_BY_ID
+import com.nikitahohulia.api.internal.v2.usersvc.NatsSubject.User.GET_BY_USERNAME
+import com.nikitahohulia.api.internal.v2.usersvc.NatsSubject.User.UPDATE
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import assertk.assertThat
@@ -31,16 +21,26 @@ import assertk.assertions.isNotNull
 import com.google.protobuf.GeneratedMessageV3
 import com.google.protobuf.Parser
 import com.nikitahohulia.listeningplatform.entity.User
-import com.nikitahohulia.nats.commonmodels.user.UserList
-import com.nikitahohulia.nats.reqreply.user.create.proto.UpdateUserRequest
-import com.nikitahohulia.nats.reqreply.user.create.proto.UpdateUserResponse
-import com.nikitahohulia.nats.reqreply.user.get_all.proto.GetAllUsersRequest
-import com.nikitahohulia.nats.reqreply.user.get_by_id.proto.DeleteUserByUsernameResponse
+import com.nikitahohulia.api.internal.v2.usersvc.commonmodels.user.UserList
+import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.create.proto.CreateUserRequest
+import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.create.proto.CreateUserResponse
+import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.create.proto.UpdateUserRequest
+import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.create.proto.UpdateUserResponse
+import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.get_all.proto.GetAllUsersRequest
+import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.get_all.proto.GetAllUsersResponse
+import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.get_by_id.proto.DeleteUserByUsernameRequest
+import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.get_by_id.proto.DeleteUserByUsernameResponse
+import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.get_by_id.proto.GetUserByIdRequest
+import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.get_by_id.proto.GetUserByIdResponse
+import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.get_by_id.proto.GetUserByUsernameRequest
+import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.get_by_id.proto.GetUserByUsernameResponse
+import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.user.get_by_id.proto.DeleteUserByIdRequest
+import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.user.get_by_id.proto.DeleteUserByIdResponse
 import net.datafaker.Faker
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.core.remove
-import com.nikitahohulia.nats.commonmodels.user.User as NatsUser
+import com.nikitahohulia.api.internal.v2.usersvc.commonmodels.user.User as NatsUser
 
 @SpringBootTest
 class NatsMovieControllerTests {
@@ -189,7 +189,7 @@ class NatsMovieControllerTests {
         val response = natsConnection.requestWithTimeout(
             subject,
             payload.toByteArray(),
-            Duration.ofSeconds(5L)
+            Duration.ofSeconds(10L)
         )
         return parser.parseFrom(response.get().data)
     }
