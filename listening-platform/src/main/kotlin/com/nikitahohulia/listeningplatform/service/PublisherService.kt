@@ -3,20 +3,22 @@ package com.nikitahohulia.listeningplatform.service
 import com.nikitahohulia.listeningplatform.dto.request.PublisherDtoRequest
 import com.nikitahohulia.listeningplatform.dto.response.PostDtoResponse
 import com.nikitahohulia.listeningplatform.dto.response.PublisherDtoResponse
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 
 interface PublisherService {
 
-    fun getPublisherByUsername(username: String): PublisherDtoResponse
+    fun getPublisherByUsername(username: String): Mono<PublisherDtoResponse>
 
-    fun getPublisherByPublisherName(publisherName: String): PublisherDtoResponse
+    fun getPublisherByPublisherName(publisherName: String): Mono<PublisherDtoResponse>
 
-    fun createPublisher(publisherDtoRequest: PublisherDtoRequest): PublisherDtoResponse
+    fun createPublisher(publisherDtoRequest: PublisherDtoRequest): Mono<PublisherDtoResponse>
 
-    fun getAllPublishers(): List<PublisherDtoResponse>
+    fun getAllPublishers(): Flux<PublisherDtoResponse>
 
-    fun deletePublisher(publisherName: String)
+    fun deletePublisher(publisherName: String): Mono<Unit>
 
-    fun postContent(publisherName: String, content: String): PostDtoResponse
+    fun postContent(publisherName: String, content: String): Mono<PostDtoResponse>
 
-    fun getPostsByPublisherName(publisherName: String): List<PostDtoResponse>
+    fun getPostsByPublisherName(publisherName: String): Flux<PostDtoResponse>
 }

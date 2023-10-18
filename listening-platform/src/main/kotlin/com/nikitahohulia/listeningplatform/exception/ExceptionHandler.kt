@@ -1,5 +1,6 @@
 package com.nikitahohulia.listeningplatform.exception
 
+import com.mongodb.MongoException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.MethodArgumentNotValidException
@@ -10,7 +11,7 @@ import java.lang.IllegalArgumentException
 @RestControllerAdvice
 class ExceptionHandler {
 
-    @ExceptionHandler(NotFoundException::class)
+    @ExceptionHandler(NotFoundException::class, EntityNotFoundException::class)
     fun notFoundExceptionHandler(ex: Exception): ResponseEntity<ExceptionResponse> {
         val errorResponse = ExceptionResponse(
             HttpStatus.NOT_FOUND.value(),
@@ -36,4 +37,14 @@ class ExceptionHandler {
         )
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse)
     }
+
+    @ExceptionHandler(MongoException::class)
+    fun serverError(ex: Exception): ResponseEntity<ExceptionResponse> {
+        val errorResponse = ExceptionResponse(
+            HttpStatus.INTERNAL_SERVER_ERROR.value(),
+            ex.message
+        )
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse)
+    }
+
 }

@@ -2,24 +2,26 @@ package com.nikitahohulia.listeningplatform.repository
 
 import com.nikitahohulia.listeningplatform.entity.Post
 import org.bson.types.ObjectId
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 
 interface CustomPostRepository {
 
-    fun findPostById(id: ObjectId): Post?
+    fun findPostById(id: ObjectId): Mono<Post>
 
-    fun findAll(): List<Post>
+    fun findAll(): Flux<Post>
 
-    fun findAllByCreatorId(id: ObjectId): List<Post>
+    fun findAllByCreatorId(id: ObjectId): Flux<Post>
 
-    fun save(post: Post): Post?
+    fun save(post: Post): Mono<Post>
 
-    fun deleteById(id: ObjectId)
+    fun deleteById(id: ObjectId): Mono<Long>
 
-    fun deleteByPublisherId(id: ObjectId)
+    fun deleteByPublisherId(id: ObjectId): Mono<Long>
 
-    fun findAllPostsByCreatorIdOrderByCreatedAt(creatorId: ObjectId): List<Post>
+    fun findAllPostsByCreatorIdOrderByCreatedAt(creatorId: ObjectId): Flux<Post>
 
-    fun findAllPublisherIdByUserId(userId: ObjectId): List<ObjectId>
+    fun findAllPublisherIdByUserId(userId: ObjectId): Flux<ObjectId>
 
-    fun findAllBySubscriptionIds(subscriptionIds: List<ObjectId>, page: Int, size: Int): List<Post>
+    fun findAllBySubscriptionIds(subscriptionIds: Flux<ObjectId>, page: Int, size: Int): Flux<Post>
 }
