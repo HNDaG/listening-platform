@@ -11,6 +11,10 @@ data class Post(
     val id: ObjectId? = null,
     val creatorId: ObjectId,
     val content: String,
-    val createdAt: LocalDateTime,
-    val thumbsUp: Int
-)
+    val createdAt: LocalDateTime = LocalDateTime.now(),
+    val thumbsUp: Int = 0
+){
+    companion object {
+        const val COLLECTION_NAME = "post"
+    }
+}

@@ -13,4 +13,8 @@ data class User(
     val email: String,
     val subscriptions: MutableSet<ObjectId> = mutableSetOf(),
     val publisherId: ObjectId? = null
-)
+){
+    companion object {
+        const val COLLECTION_NAME = "user"
+    }
+}

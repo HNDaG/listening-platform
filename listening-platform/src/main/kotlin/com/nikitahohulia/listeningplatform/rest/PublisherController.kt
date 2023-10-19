@@ -1,9 +1,11 @@
-package com.nikitahohulia.listeningplatform.controller.rest
+package com.nikitahohulia.listeningplatform.rest
 
 import com.nikitahohulia.listeningplatform.bpp.annotation.LogOnException
 import com.nikitahohulia.listeningplatform.dto.request.PublisherDtoRequest
+import com.nikitahohulia.listeningplatform.dto.request.toEntity
 import com.nikitahohulia.listeningplatform.dto.response.PostDtoResponse
 import com.nikitahohulia.listeningplatform.dto.response.PublisherDtoResponse
+import com.nikitahohulia.listeningplatform.dto.response.toResponse
 import com.nikitahohulia.listeningplatform.service.PublisherService
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotEmpty
@@ -27,25 +29,25 @@ class PublisherController(private val publisherService: PublisherService) {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
     fun findAllPublishers(): Flux<PublisherDtoResponse> {
-        return publisherService.getAllPublishers()
+        return publisherService.getAllPublishers().map { it.toResponse() }
     }
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/by/publisherName/{publisherName}")
     fun findPublisherByName(@PathVariable publisherName: String): Mono<PublisherDtoResponse> {
-        return publisherService.getPublisherByPublisherName(publisherName)
+        return publisherService.getPublisherByPublisherName(publisherName).map { it.toResponse() }
     }
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/by/username/{username}")
     fun findPublisherByUsername(@PathVariable username: String): Mono<PublisherDtoResponse> {
-        return publisherService.getPublisherByUsername(username)
+        return publisherService.getPublisherByUsername(username).map { it.toResponse() }
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    fun createPublisher(@Valid @RequestBody publisher: PublisherDtoRequest): Mono<PublisherDtoResponse> {
-        return publisherService.createPublisher(publisher)
+    fun createPublisher(@Valid @RequestBody publisherDtoRequest: PublisherDtoRequest): Mono<PublisherDtoResponse> {
+        return publisherService.createPublisher(publisherDtoRequest.toEntity()).map { it.toResponse() }
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -60,12 +62,12 @@ class PublisherController(private val publisherService: PublisherService) {
         @PathVariable publisherName: String,
         @RequestBody @NotEmpty content: String
     ): Mono<PostDtoResponse> {
-        return publisherService.postContent(publisherName, content)
+        return publisherService.postContent(publisherName, content).map { it.toResponse() }
     }
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/posts/{publisherName}")
     fun getPublishersPosts(@PathVariable publisherName: String): Flux<PostDtoResponse> {
-        return publisherService.getPostsByPublisherName(publisherName)
+        return publisherService.getPostsByPublisherName(publisherName).map { it.toResponse() }
     }
 }

@@ -3,36 +3,23 @@ package com.nikitahohulia.listeningplatform.bpp
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.stereotype.Component
 import com.google.protobuf.GeneratedMessageV3
-import com.nikitahohulia.listeningplatform.controller.nats.NatsController
+import com.nikitahohulia.listeningplatform.nats.NatsController
+import com.nikitahohulia.listeningplatform.nats.NatsReactiveHandler
 import io.nats.client.Connection
 import io.nats.client.Dispatcher
 import io.nats.client.Message
+import reactor.core.scheduler.Scheduler
 
 @Component
-class NatsControllerBeanPostProcessor(private val connection: Connection) : BeanPostProcessor {
+class NatsControllerBeanPostProcessor(private val scheduler: Scheduler) : BeanPostProcessor {
 
     override fun postProcessBeforeInitialization(bean: Any, beanName: String): Any {
         if (bean is NatsController<*, *>) {
-            bean.initializeNatsController(connection)
+            val reactiveHandler = NatsReactiveHandler(bean, scheduler)
+            bean.connection
+                .createDispatcher(reactiveHandler)
+                .subscribe(bean.subject)
         }
         return bean
     }
-}
-
-private fun <RequestT : GeneratedMessageV3, ResponseT : GeneratedMessageV3>
-        NatsController<RequestT, ResponseT>.initializeNatsController(
-    connection: Connection
-) {
-    createDispatcher(connection).apply {
-        subscribe(subject)
-    }
-}
-
-private fun <RequestT : GeneratedMessageV3, ResponseT : GeneratedMessageV3>
-        NatsController<RequestT, ResponseT>.createDispatcher(
-    connection: Connection
-): Dispatcher = connection.createDispatcher { message: Message ->
-    val parsedData = parser.parseFrom(message.data)
-    val response = handle(parsedData)
-    connection.publish(message.replyTo, response.toByteArray())
 }

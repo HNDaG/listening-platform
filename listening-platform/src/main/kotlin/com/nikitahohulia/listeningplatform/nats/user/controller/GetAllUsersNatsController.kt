@@ -1,7 +1,7 @@
-package com.nikitahohulia.listeningplatform.controller.nats.user
+package com.nikitahohulia.listeningplatform.nats.user.controller
 
 import com.google.protobuf.Parser
-import com.nikitahohulia.listeningplatform.controller.nats.NatsController
+import com.nikitahohulia.listeningplatform.nats.NatsController
 import com.nikitahohulia.listeningplatform.dto.response.toProto
 import com.nikitahohulia.listeningplatform.service.UserService
 import com.nikitahohulia.api.internal.v2.usersvc.NatsSubject
@@ -10,6 +10,8 @@ import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.get_all.proto.Ge
 import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.get_all.proto.GetAllUsersResponse
 import io.nats.client.Connection
 import org.springframework.stereotype.Component
+import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.toMono
 
 @Component
 class GetAllUsersNatsController(
@@ -20,11 +22,16 @@ class GetAllUsersNatsController(
     override val subject = NatsSubject.User.GET_ALL
     override val parser: Parser<GetAllUsersRequest> = GetAllUsersRequest.parser()
 
-    override fun handle(request: GetAllUsersRequest): GetAllUsersResponse = runCatching {
-
-        buildSuccessResponse(userService.getAllUsers().map { it.toProto() })
-    }.getOrElse { exception ->
-        buildFailureResponse(exception.javaClass.simpleName, exception.toString())
+    override fun handleHelper(request: GetAllUsersRequest): Mono<GetAllUsersResponse> {
+        return userService.getAllUsers()
+            .collectList()
+            .map {buildSuccessResponse(it.map { user -> user.toProto() })}
+            .onErrorResume { ex ->
+                buildFailureResponse(
+                    ex.javaClass.simpleName,
+                    ex.toString()
+                ).toMono()
+            }
     }
 
     private fun buildSuccessResponse(userList: List<User>): GetAllUsersResponse =

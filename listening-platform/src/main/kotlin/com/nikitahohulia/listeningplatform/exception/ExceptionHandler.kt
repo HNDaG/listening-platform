@@ -11,7 +11,7 @@ import java.lang.IllegalArgumentException
 @RestControllerAdvice
 class ExceptionHandler {
 
-    @ExceptionHandler(NotFoundException::class, EntityNotFoundException::class)
+    @ExceptionHandler(NotFoundException::class)
     fun notFoundExceptionHandler(ex: Exception): ResponseEntity<ExceptionResponse> {
         val errorResponse = ExceptionResponse(
             HttpStatus.NOT_FOUND.value(),

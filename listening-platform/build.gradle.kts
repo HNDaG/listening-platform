@@ -24,6 +24,7 @@ dependencies {
     implementation("io.projectreactor:reactor-core:3.5.10")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("com.willowtreeapps.assertk:assertk-jvm:0.27.0")
     implementation("net.datafaker:datafaker:2.0.1")
 
 

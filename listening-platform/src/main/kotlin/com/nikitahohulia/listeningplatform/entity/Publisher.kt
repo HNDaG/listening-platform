@@ -11,4 +11,8 @@ data class Publisher(
     val publisherName: String,
     val password: String,
     val rating: Double? = null,
-)
+){
+    companion object {
+        const val COLLECTION_NAME = "publisher"
+    }
+}

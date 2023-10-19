@@ -1,27 +1,24 @@
 package com.nikitahohulia.listeningplatform.service
 
-import com.nikitahohulia.listeningplatform.dto.request.PublisherDtoRequest
-import com.nikitahohulia.listeningplatform.dto.request.UserDtoRequest
-import com.nikitahohulia.listeningplatform.dto.response.PostDtoResponse
-import com.nikitahohulia.listeningplatform.dto.response.PublisherDtoResponse
-import com.nikitahohulia.listeningplatform.dto.response.UserDtoResponse
+import com.nikitahohulia.listeningplatform.entity.Post
+import com.nikitahohulia.listeningplatform.entity.Publisher
 import com.nikitahohulia.listeningplatform.entity.User
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
 interface UserService {
 
-    fun createUser(userDtoRequest: UserDtoRequest): Mono<UserDtoResponse>
+    fun createUser(user: User): Mono<User>
 
-    fun becamePublisher(username: String, publisherDtoRequest: PublisherDtoRequest): Mono<PublisherDtoResponse>
+    fun becamePublisher(username: String, publisher: Publisher): Mono<Publisher>
 
-    fun updateUser(id: String, user: User): Mono<UserDtoResponse>
+    fun updateUser(id: String, user: User): Mono<User>
 
-    fun getUserByUsername(username: String): Mono<UserDtoResponse>
+    fun getUserByUsername(username: String): Mono<User>
 
-    fun getUserById(id: String): Mono<UserDtoResponse>
+    fun getUserById(id: String): Mono<User>
 
-    fun getAllUsers(): Flux<UserDtoResponse>
+    fun getAllUsers(): Flux<User>
 
     fun deleteUserById(id: String): Mono<Unit>
 
@@ -29,5 +26,5 @@ interface UserService {
 
     fun subscribe(username: String, publisherName: String): Mono<Unit>
 
-    fun getPostsFromFollowedCreators(username: String, page: Int): Flux<PostDtoResponse>
+    fun getPostsFromFollowedCreators(username: String, page: Int): Flux<Post>
 }

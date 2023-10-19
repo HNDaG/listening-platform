@@ -1,11 +1,13 @@
-package com.nikitahohulia.listeningplatform.controller.rest
+package com.nikitahohulia.listeningplatform.rest
 
 import com.nikitahohulia.listeningplatform.bpp.annotation.LogOnException
 import com.nikitahohulia.listeningplatform.dto.request.PublisherDtoRequest
 import com.nikitahohulia.listeningplatform.dto.request.UserDtoRequest
+import com.nikitahohulia.listeningplatform.dto.request.toEntity
 import com.nikitahohulia.listeningplatform.dto.response.PostDtoResponse
 import com.nikitahohulia.listeningplatform.dto.response.PublisherDtoResponse
 import com.nikitahohulia.listeningplatform.dto.response.UserDtoResponse
+import com.nikitahohulia.listeningplatform.dto.response.toResponse
 import com.nikitahohulia.listeningplatform.service.UserServiceImpl
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
@@ -28,19 +30,19 @@ class UserController(private val userService: UserServiceImpl) {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
     fun findAllUsers(): Flux<UserDtoResponse> {
-        return userService.getAllUsers()
+        return userService.getAllUsers().map { it.toResponse() }
     }
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{username}")
     fun findUserByUsername(@PathVariable username: String): Mono<UserDtoResponse> {
-        return userService.getUserByUsername(username)
+        return userService.getUserByUsername(username).map { it.toResponse() }
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     fun createUser(@Valid @RequestBody user: UserDtoRequest): Mono<UserDtoResponse> {
-        return userService.createUser(user)
+        return userService.createUser(user.toEntity()).map { it.toResponse() }
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -64,7 +66,7 @@ class UserController(private val userService: UserServiceImpl) {
         @PathVariable("username") username: String,
         @Valid @RequestBody publisherDtoRequest: PublisherDtoRequest
     ): Mono<PublisherDtoResponse> {
-        return userService.becamePublisher(username, publisherDtoRequest)
+        return userService.becamePublisher(username, publisherDtoRequest.toEntity()).map { it.toResponse() }
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -73,6 +75,6 @@ class UserController(private val userService: UserServiceImpl) {
         @PathVariable("username") username: String,
         @PathVariable page: Int
     ): Flux<PostDtoResponse> {
-        return userService.getPostsFromFollowedCreators(username, page)
+        return userService.getPostsFromFollowedCreators(username, page).map { it.toResponse() }
     }
 }

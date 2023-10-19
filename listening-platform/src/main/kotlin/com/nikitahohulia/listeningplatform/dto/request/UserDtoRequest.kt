@@ -38,14 +38,14 @@ fun NatsUser.toRequest() = UserDtoRequest(
 )
 
 fun NatsUser.toEntity(): User {
-    val user = User(
-        id = ObjectId(id).takeIf { hasId() },
+    return User(
+        id = if (hasId()) ObjectId(id) else null,
+        email = email,
         username = username,
         subscriptions = subscriptionsList.map { ObjectId(it) }.toMutableSet(),
-        email = email,
-        password = password,
+        publisherId = if (hasPublisherId()) ObjectId(publisherId) else null,
+        password = password
     )
-    if (hasPublisherId())
-        return user.copy(publisherId = ObjectId(publisherId))
-    return user
 }
+
+

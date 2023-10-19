@@ -13,39 +13,37 @@ import reactor.core.publisher.Mono
 @Repository
 class CustomUserRepositoryImpl(private val mongoTemplate: ReactiveMongoTemplate) : CustomUserRepository {
 
-    val collectionName = "user"
-
     override fun findById(id: ObjectId): Mono<User> {
         val query = Query().addCriteria(Criteria.where("id").`is`(id))
-        return mongoTemplate.findOne(query, User::class.java, collectionName)
+        return mongoTemplate.findOne(query, User::class.java, User.COLLECTION_NAME)
     }
 
     override fun findAll(): Flux<User> {
-        return mongoTemplate.findAll(User::class.java, collectionName)
+        return mongoTemplate.findAll(User::class.java, User.COLLECTION_NAME)
     }
 
     override fun save(user: User): Mono<User> {
-        return mongoTemplate.save(user, collectionName)
+        return mongoTemplate.save(user, User.COLLECTION_NAME)
     }
 
     override fun deleteById(id: ObjectId): Mono<Long> {
         val query = Query().addCriteria(Criteria.where("id").`is`(id))
-        return mongoTemplate.remove(query, User::class.java, collectionName).map { it.deletedCount }
+        return mongoTemplate.remove(query, User::class.java, User.COLLECTION_NAME).map { it.deletedCount }
     }
 
     override fun findByUsername(username: String): Mono<User> {
         val query = Query().addCriteria(Criteria.where("username").`is`(username))
-        return mongoTemplate.findOne(query, User::class.java, collectionName)
+        return mongoTemplate.findOne(query, User::class.java, User.COLLECTION_NAME)
     }
 
     override fun deleteUserByUsername(username: String): Mono<Long> {
         val query = Query().addCriteria(Criteria.where("username").`is`(username))
-        return mongoTemplate.remove(query, User::class.java, collectionName).map { it.deletedCount }
+        return mongoTemplate.remove(query, User::class.java, User.COLLECTION_NAME).map { it.deletedCount }
     }
 
     override fun findByPublisherId(publisherId: ObjectId): Mono<User> {
         val query = Query().addCriteria(Criteria.where("publisherId").`is`(publisherId))
-        return mongoTemplate.findOne(query, User::class.java, collectionName)
+        return mongoTemplate.findOne(query, User::class.java, User.COLLECTION_NAME)
     }
 
     override fun findPublisherIdsByUsername(username: String): Flux<ObjectId> {
