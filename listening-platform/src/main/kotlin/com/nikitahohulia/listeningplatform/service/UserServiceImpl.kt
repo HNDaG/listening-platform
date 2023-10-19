@@ -1,6 +1,5 @@
 package com.nikitahohulia.listeningplatform.service
 
-import com.mongodb.MongoException
 import com.nikitahohulia.listeningplatform.entity.Post
 import com.nikitahohulia.listeningplatform.entity.Publisher
 import com.nikitahohulia.listeningplatform.entity.User
@@ -15,6 +14,8 @@ import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
 import reactor.kotlin.core.publisher.toMono
+import reactor.kotlin.core.util.function.component1
+import reactor.kotlin.core.util.function.component2
 
 @Service
 class UserServiceImpl(
@@ -36,7 +37,8 @@ class UserServiceImpl(
     override fun createUser(user: User): Mono<User> {
         return userRepository.findByUsername(user.username)
             .handle<User> { _, sync ->
-                sync.error(DuplicateException("User with this username already exists")) }
+                sync.error(DuplicateException("User with this username already exists"))
+            }
             .switchIfEmpty(userRepository.save(user))
     }
 
@@ -48,20 +50,18 @@ class UserServiceImpl(
             .handle<Publisher> { _, sync ->
                 sync.error(DuplicateException("Publisher with the same PublisherName already exists"))
             }
-            .switchIfEmpty { userRepository.findByUsername(username)
-                    .flatMap { user ->
-                        if (user.publisherId != null) {
-                            DuplicateException("User is already a publisher").toMono()
-                        } else {
-                            publisherRepository.save(publisher)
-                                .flatMap { newPublisher ->
-                                    userRepository.save(user.copy(publisherId = newPublisher.id))
-                                        .thenReturn(newPublisher)
-                                }
-                        }
+            .switchIfEmpty {
+                userRepository.findByUsername(username)
+                    .filter { user -> user.publisherId != null }
+                    .switchIfEmpty { DuplicateException("User is already a publisher").toMono() }
+                    .zipWhen { publisherRepository.save(publisher) }
+                    .flatMap { (user, newPublisher) ->
+                        val userAsPublisher = user.copy(publisherId = newPublisher.id)
+                        userRepository.save(userAsPublisher).thenReturn(newPublisher)
                     }
             }
     }
+
 
     override fun updateUser(id: String, user: User): Mono<User> {
         return userRepository.findById(ObjectId(id))
@@ -77,7 +77,8 @@ class UserServiceImpl(
         return userRepository.deleteById(ObjectId(id))
             .handle { deletedCount, sync ->
                 if (deletedCount == 0L) {
-                    sync.error(NotFoundException("User with ID - $id not found")) }
+                    sync.error(NotFoundException("User with ID - $id not found"))
+                }
             }
     }
 
@@ -85,20 +86,20 @@ class UserServiceImpl(
         return userRepository.deleteUserByUsername(username)
             .handle { deletedCount, sync ->
                 if (deletedCount == 0L) {
-                    sync.error(NotFoundException("User with username - $username not found")) }
+                    sync.error(NotFoundException("User with username - $username not found"))
+                }
             }
     }
 
     override fun subscribe(username: String, publisherName: String): Mono<Unit> {
         return userRepository.findByUsername(username)
-            .flatMap { user -> publisherRepository.findByPublisherName(publisherName)
-                    .switchIfEmpty { NotFoundException("Publisher not found with publisherName = $publisherName")
-                        .toMono() }
-                    .flatMap { publisher ->
-                        user.subscriptions.add(publisher.id!!)
-                        userRepository.save(user).then(Mono.empty())
-                    }
+            .zipWhen { publisherRepository.findByPublisherName(publisherName) }
+            .switchIfEmpty { NotFoundException("Publisher not found with publisherName = $publisherName").toMono() }
+            .flatMap { (user, publisher) ->
+                user.subscriptions.add(publisher.id!!)
+                userRepository.save(user)
             }
+            .thenReturn(Unit)
     }
 
     override fun getPostsFromFollowedCreators(username: String, page: Int): Flux<Post> {
