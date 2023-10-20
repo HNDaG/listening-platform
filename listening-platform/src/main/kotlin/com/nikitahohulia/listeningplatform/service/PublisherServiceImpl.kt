@@ -29,8 +29,9 @@ class PublisherServiceImpl(
 
     override fun getPublisherByPublisherName(publisherName: String): Mono<Publisher> {
         return publisherRepository.findByPublisherName(publisherName)
-            .switchIfEmpty { NotFoundException("Publisher not found with given publisherName = $publisherName")
-                .toMono() }
+            .switchIfEmpty { 
+                NotFoundException("Publisher not found with given publisherName = $publisherName").toMono() 
+            }
     }
 
     override fun createPublisher(publisher: Publisher): Mono<Publisher> {
