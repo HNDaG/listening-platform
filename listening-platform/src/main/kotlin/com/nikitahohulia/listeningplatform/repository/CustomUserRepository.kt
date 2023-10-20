@@ -2,22 +2,24 @@ package com.nikitahohulia.listeningplatform.repository
 
 import com.nikitahohulia.listeningplatform.entity.User
 import org.bson.types.ObjectId
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 
 interface CustomUserRepository {
 
-    fun findUserById(id: ObjectId): User?
+    fun findById(id: ObjectId): Mono<User>
 
-    fun findAll(): List<User>
+    fun findAll(): Flux<User>
 
-    fun save(user: User): User?
+    fun save(user: User): Mono<User>
 
-    fun deleteById(id: ObjectId): Long
+    fun deleteById(id: ObjectId): Mono<Long>
 
-    fun findByUsername(username: String): User?
+    fun findByUsername(username: String): Mono<User>
 
-    fun deleteUserByUsername(username: String): Long
+    fun deleteUserByUsername(username: String): Mono<Long>
 
-    fun findByPublisherId(publisherId: ObjectId): User?
+    fun findByPublisherId(publisherId: ObjectId): Mono<User>
 
-    fun findPublisherIdsByUsername(username: String): List<ObjectId>
+    fun findPublisherIdsByUsername(username: String): Flux<ObjectId>
 }

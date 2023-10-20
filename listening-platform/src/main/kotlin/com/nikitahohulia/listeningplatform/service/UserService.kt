@@ -1,31 +1,30 @@
 package com.nikitahohulia.listeningplatform.service
 
-import com.nikitahohulia.listeningplatform.dto.request.PublisherDtoRequest
-import com.nikitahohulia.listeningplatform.dto.request.UserDtoRequest
-import com.nikitahohulia.listeningplatform.dto.response.PostDtoResponse
-import com.nikitahohulia.listeningplatform.dto.response.PublisherDtoResponse
-import com.nikitahohulia.listeningplatform.dto.response.UserDtoResponse
+import com.nikitahohulia.listeningplatform.entity.Post
+import com.nikitahohulia.listeningplatform.entity.Publisher
 import com.nikitahohulia.listeningplatform.entity.User
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 
 interface UserService {
 
-    fun createUser(userDtoRequest: UserDtoRequest): UserDtoResponse
+    fun createUser(user: User): Mono<User>
 
-    fun becamePublisher(username: String, publisherDtoRequest: PublisherDtoRequest): PublisherDtoResponse
+    fun becamePublisher(username: String, publisher: Publisher): Mono<Publisher>
 
-    fun updateUser(id: String, user: User): UserDtoResponse
+    fun updateUser(id: String, user: User): Mono<User>
 
-    fun getUserByUsername(username: String): User
+    fun getUserByUsername(username: String): Mono<User>
 
-    fun getUserById(id: String): User
+    fun getUserById(id: String): Mono<User>
 
-    fun getAllUsers(): List<UserDtoResponse>
+    fun getAllUsers(): Flux<User>
 
-    fun deleteUserById(id: String)
+    fun deleteUserById(id: String): Mono<Unit>
 
-    fun deleteUserByUsername(username: String)
+    fun deleteUserByUsername(username: String): Mono<Unit>
 
-    fun subscribe(username: String, publisherName: String)
+    fun subscribe(username: String, publisherName: String): Mono<Unit>
 
-    fun getPostsFromFollowedCreators(username: String, page: Int): List<PostDtoResponse>
+    fun getPostsFromFollowedCreators(username: String, page: Int): Flux<Post>
 }

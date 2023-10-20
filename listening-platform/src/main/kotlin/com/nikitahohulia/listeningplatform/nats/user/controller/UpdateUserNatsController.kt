@@ -1,10 +1,10 @@
-package com.nikitahohulia.listeningplatform.controller.nats.user
+package com.nikitahohulia.listeningplatform.nats.user.controller
 
 import com.google.protobuf.Parser
-import com.nikitahohulia.listeningplatform.controller.nats.NatsController
+import com.nikitahohulia.listeningplatform.nats.NatsController
 import com.nikitahohulia.listeningplatform.dto.request.toEntity
 import com.nikitahohulia.listeningplatform.dto.response.toProto
-import com.nikitahohulia.listeningplatform.exception.EntityNotFoundException
+import com.nikitahohulia.listeningplatform.exception.NotFoundException
 import com.nikitahohulia.listeningplatform.service.UserService
 import com.nikitahohulia.api.internal.v2.usersvc.NatsSubject
 import com.nikitahohulia.api.internal.v2.usersvc.commonmodels.user.User
@@ -12,6 +12,8 @@ import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.create.proto.Cre
 import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.create.proto.CreateUserResponse
 import io.nats.client.Connection
 import org.springframework.stereotype.Component
+import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.toMono
 
 @Component
 class UpdateUserNatsController(
@@ -22,14 +24,19 @@ class UpdateUserNatsController(
     override val subject = NatsSubject.User.UPDATE
     override val parser: Parser<CreateUserRequest> = CreateUserRequest.parser()
 
-    override fun handle(request: CreateUserRequest): CreateUserResponse = runCatching {
-        if (request.user.id == null)
-            throw EntityNotFoundException("There is no id passed")
-        val savedUser = userService.updateUser(request.user.id, request.user.toEntity())
 
-        buildSuccessResponse(savedUser.toProto())
-    }.getOrElse { exception ->
-        buildFailureResponse(exception.javaClass.simpleName, exception.toString())
+    override fun handleHelper(request: CreateUserRequest): Mono<CreateUserResponse> {
+        if (request.user.id == null)
+            throw NotFoundException("There is no id passed")
+
+        return userService.updateUser(request.user.id, request.user.toEntity())
+            .map { buildSuccessResponse(it.toProto()) }
+            .onErrorResume { ex ->
+                buildFailureResponse(
+                    ex.javaClass.simpleName,
+                    ex.toString()
+                ).toMono()
+            }
     }
 
     private fun buildSuccessResponse(user: User): CreateUserResponse {

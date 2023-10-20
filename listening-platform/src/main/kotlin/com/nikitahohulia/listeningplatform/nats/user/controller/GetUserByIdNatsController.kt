@@ -1,15 +1,17 @@
-package com.nikitahohulia.listeningplatform.controller.nats.user
+package com.nikitahohulia.listeningplatform.nats.user.controller
 
 import com.google.protobuf.Parser
-import com.nikitahohulia.listeningplatform.controller.nats.NatsController
 import com.nikitahohulia.listeningplatform.dto.response.toProto
 import com.nikitahohulia.listeningplatform.service.UserService
 import com.nikitahohulia.api.internal.v2.usersvc.NatsSubject
 import com.nikitahohulia.api.internal.v2.usersvc.commonmodels.user.User
 import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.get_by_id.proto.GetUserByIdRequest
 import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.get_by_id.proto.GetUserByIdResponse
+import com.nikitahohulia.listeningplatform.nats.NatsController
 import io.nats.client.Connection
 import org.springframework.stereotype.Component
+import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.toMono
 
 @Component
 class GetUserByIdNatsController(
@@ -20,11 +22,17 @@ class GetUserByIdNatsController(
     override val subject = NatsSubject.User.GET_BY_ID
     override val parser: Parser<GetUserByIdRequest> = GetUserByIdRequest.parser()
 
-    override fun handle(request: GetUserByIdRequest): GetUserByIdResponse = runCatching {
+    override fun handleHelper(request: GetUserByIdRequest): Mono<GetUserByIdResponse> {
+        val id = request.userId
 
-        buildSuccessResponse(userService.getUserById(request.userId).toProto())
-    }.getOrElse { exception ->
-        buildFailureResponse(exception.javaClass.simpleName, exception.toString())
+        return userService.getUserById(id)
+            .map { buildSuccessResponse(it.toProto()) }
+            .onErrorResume { ex ->
+                buildFailureResponse(
+                    ex.javaClass.simpleName,
+                    ex.toString()
+                ).toMono()
+            }
     }
 
     private fun buildSuccessResponse(user: User): GetUserByIdResponse =

@@ -1,13 +1,15 @@
-package com.nikitahohulia.listeningplatform.controller.nats.user
+package com.nikitahohulia.listeningplatform.nats.user.controller
 
 import com.google.protobuf.Parser
-import com.nikitahohulia.listeningplatform.controller.nats.NatsController
 import com.nikitahohulia.listeningplatform.service.UserService
 import com.nikitahohulia.api.internal.v2.usersvc.NatsSubject
 import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.user.get_by_id.proto.DeleteUserByIdRequest
 import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.user.get_by_id.proto.DeleteUserByIdResponse
+import com.nikitahohulia.listeningplatform.nats.NatsController
 import io.nats.client.Connection
 import org.springframework.stereotype.Component
+import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.toMono
 
 @Component
 class DeleteUserByIdNatsController(
@@ -18,12 +20,17 @@ class DeleteUserByIdNatsController(
     override val subject = NatsSubject.User.DELETE_BY_ID
     override val parser: Parser<DeleteUserByIdRequest> = DeleteUserByIdRequest.parser()
 
-    override fun handle(request: DeleteUserByIdRequest): DeleteUserByIdResponse = runCatching {
-        userService.deleteUserById(request.userId)
+    override fun handleHelper(request: DeleteUserByIdRequest): Mono<DeleteUserByIdResponse> {
+        val id = request.userId
 
-        buildSuccessResponse()
-    }.getOrElse { exception ->
-        buildFailureResponse(exception.javaClass.simpleName, exception.toString())
+        return userService.deleteUserById(id)
+            .then(buildSuccessResponse().toMono())
+            .onErrorResume { ex ->
+                buildFailureResponse(
+                    ex.javaClass.simpleName,
+                    ex.toString()
+                ).toMono()
+            }
     }
 
     private fun buildSuccessResponse(): DeleteUserByIdResponse =

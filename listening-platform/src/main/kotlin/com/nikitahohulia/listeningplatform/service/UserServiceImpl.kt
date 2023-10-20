@@ -1,102 +1,110 @@
 package com.nikitahohulia.listeningplatform.service
 
-import com.nikitahohulia.listeningplatform.dto.request.PublisherDtoRequest
-import com.nikitahohulia.listeningplatform.dto.request.UserDtoRequest
-import com.nikitahohulia.listeningplatform.dto.request.toEntity
-import com.nikitahohulia.listeningplatform.dto.response.PostDtoResponse
-import com.nikitahohulia.listeningplatform.dto.response.PublisherDtoResponse
-import com.nikitahohulia.listeningplatform.dto.response.UserDtoResponse
-import com.nikitahohulia.listeningplatform.dto.response.toResponse
+import com.nikitahohulia.listeningplatform.entity.Post
+import com.nikitahohulia.listeningplatform.entity.Publisher
 import com.nikitahohulia.listeningplatform.entity.User
 import com.nikitahohulia.listeningplatform.exception.DuplicateException
-import com.nikitahohulia.listeningplatform.exception.EntityNotFoundException
 import com.nikitahohulia.listeningplatform.exception.NotFoundException
 import com.nikitahohulia.listeningplatform.repository.CustomPostRepository
 import com.nikitahohulia.listeningplatform.repository.CustomUserRepository
-import com.nikitahohulia.listeningplatform.repository.PublisherRepository
+import com.nikitahohulia.listeningplatform.repository.CustomPublisherRepository
 import org.bson.types.ObjectId
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.switchIfEmpty
+import reactor.kotlin.core.publisher.toMono
+import reactor.kotlin.core.util.function.component1
+import reactor.kotlin.core.util.function.component2
 
 @Service
 class UserServiceImpl(
     private val userRepository: CustomUserRepository,
-    private val publisherRepository: PublisherRepository,
+    private val publisherRepository: CustomPublisherRepository,
     private val postRepository: CustomPostRepository
 ) : UserService {
 
-    override fun getUserByUsername(username: String): User {
+    override fun getUserByUsername(username: String): Mono<User> {
         return userRepository.findByUsername(username)
-            ?: throw NotFoundException("User not found with given username = $username")
+            .switchIfEmpty { NotFoundException("User not found with given username = $username").toMono() }
     }
 
-    override fun getUserById(id: String): User {
-        return userRepository.findUserById(ObjectId(id))
-            ?: throw NotFoundException("User not found with given id = $id")
+    override fun getUserById(id: String): Mono<User> {
+        return userRepository.findById(ObjectId(id))
+            .switchIfEmpty { NotFoundException("User not found with given id = $id").toMono() }
     }
 
-    override fun createUser(userDtoRequest: UserDtoRequest): UserDtoResponse {
-        val existingUser = userRepository.findByUsername(userDtoRequest.username)
-        if (existingUser != null) {
-            throw DuplicateException("Username already exists")
-        }
-        val newUser = userRepository.save(userDtoRequest.toEntity())
-        return newUser?.toResponse() ?: throw NotFoundException("Internal error, failed to save new user")
+    override fun createUser(user: User): Mono<User> {
+        return userRepository.findByUsername(user.username)
+            .handle<User> { _, sync ->
+                sync.error(DuplicateException("User with this username already exists"))
+            }
+            .switchIfEmpty(userRepository.save(user))
     }
 
-    override fun becamePublisher(username: String, publisherDtoRequest: PublisherDtoRequest): PublisherDtoResponse {
-        val existingPublisher = publisherRepository.findByPublisherName(publisherDtoRequest.publisherName)
-        if (existingPublisher != null) {
-            throw DuplicateException("Publisher with the same PublisherName already exists")
-        }
-        val newPublisher = publisherRepository.save(publisherDtoRequest.toEntity())
-        val user = userRepository.findByUsername(username)
-        if (user != null) {
-            userRepository.save(user.copy(publisherId = newPublisher.id))
-            return newPublisher.toResponse()
-        }
-        throw IllegalArgumentException("Database internal fail")
+    override fun becamePublisher(
+        username: String,
+        publisher: Publisher
+    ): Mono<Publisher> {
+        return publisherRepository.findByPublisherName(publisher.publisherName)
+            .handle<Publisher> { _, sync ->
+                sync.error(DuplicateException("Publisher with the same PublisherName already exists"))
+            }
+            .switchIfEmpty {
+                userRepository.findByUsername(username)
+                    .filter { user -> user.publisherId != null }
+                    .switchIfEmpty { DuplicateException("User is already a publisher").toMono() }
+                    .zipWhen { publisherRepository.save(publisher) }
+                    .flatMap { (user, newPublisher) ->
+                        val userAsPublisher = user.copy(publisherId = newPublisher.id)
+                        userRepository.save(userAsPublisher).thenReturn(newPublisher)
+                    }
+            }
     }
 
-    override fun updateUser(id: String, user: User): UserDtoResponse {
-        val existingUser = userRepository.findUserById(ObjectId(id))
-        existingUser.let {
-            val updatedUser = user.copy(id = ObjectId(id))
-            userRepository.save(updatedUser)
-            return updatedUser.toResponse()
-        }
+
+    override fun updateUser(id: String, user: User): Mono<User> {
+        return userRepository.findById(ObjectId(id))
+            .switchIfEmpty { NotFoundException("User not found with given id = $id").toMono() }
+            .flatMap { userRepository.save(user.copy(id = ObjectId(id))) }
     }
 
-    override fun getAllUsers(): List<UserDtoResponse> {
-        return userRepository.findAll().map { it.toResponse() }
+    override fun getAllUsers(): Flux<User> {
+        return userRepository.findAll()
     }
 
-    override fun deleteUserById(id: String) {
-        if (userRepository.deleteById(ObjectId(id)) == 0L)
-            throw EntityNotFoundException("User with ID - $id not found")
-        return
+    override fun deleteUserById(id: String): Mono<Unit> {
+        return userRepository.deleteById(ObjectId(id))
+            .handle { deletedCount, sync ->
+                if (deletedCount == 0L) {
+                    sync.error(NotFoundException("User with ID - $id not found"))
+                }
+            }
     }
 
-    override fun deleteUserByUsername(username: String) {
-        if (userRepository.deleteUserByUsername(username) == 0L)
-            throw EntityNotFoundException("User with username - $username not found")
-        return
+    override fun deleteUserByUsername(username: String): Mono<Unit> {
+        return userRepository.deleteUserByUsername(username)
+            .handle { deletedCount, sync ->
+                if (deletedCount == 0L) {
+                    sync.error(NotFoundException("User with username - $username not found"))
+                }
+            }
     }
 
-    override fun subscribe(username: String, publisherName: String) {
-        val user = getUserByUsername(username)
-        val publisher = publisherRepository.findByPublisherName(publisherName)
-            ?: throw NotFoundException("Publisher not found with given publisherName = $publisherName")
-        if (user.id != null && publisher.id != null) {
-            user.subscriptions.add(publisher.id)
-            userRepository.save(user.copy(id = user.id))
-            return
-        }
-        throw IllegalArgumentException("Database internal fail")
+    override fun subscribe(username: String, publisherName: String): Mono<Unit> {
+        return userRepository.findByUsername(username)
+            .zipWhen { publisherRepository.findByPublisherName(publisherName) }
+            .switchIfEmpty { NotFoundException("Publisher not found with publisherName = $publisherName").toMono() }
+            .flatMap { (user, publisher) ->
+                user.subscriptions.add(publisher.id!!)
+                userRepository.save(user)
+            }
+            .thenReturn(Unit)
     }
 
-    override fun getPostsFromFollowedCreators(username: String, page: Int): List<PostDtoResponse> {
+    override fun getPostsFromFollowedCreators(username: String, page: Int): Flux<Post> {
         val ids = userRepository.findPublisherIdsByUsername(username)
-        return postRepository.findAllBySubscriptionIds(ids, page, DEFAULT_PAGE_SIZE).map { it.toResponse() }
+        return postRepository.findAllBySubscriptionIds(ids, page, DEFAULT_PAGE_SIZE)
     }
 
     private companion object {
