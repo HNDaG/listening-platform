@@ -69,7 +69,8 @@ class PublisherServiceImpl(
     override fun getPostsByPublisherName(publisherName: String): Flux<Post> {
         return publisherRepository.findByPublisherName(publisherName)
             .switchIfEmpty { NotFoundException("Publisher not found with given publisherName = $publisherName")
-                .toMono() }
+                .toMono()
+            }
             .flatMapMany { publisher -> findAllPostsByCreatorIdOrderByCreatedAt(publisher) }
     }
 
