@@ -25,7 +25,7 @@ class GetAllUsersNatsController(
     override fun handleHelper(request: GetAllUsersRequest): Mono<GetAllUsersResponse> {
         return userService.getAllUsers()
             .collectList()
-            .map {buildSuccessResponse(it.map { user -> user.toProto() })}
+            .map { buildSuccessResponse(it.map { user -> user.toProto() }) }
             .onErrorResume { ex ->
                 buildFailureResponse(
                     ex.javaClass.simpleName,

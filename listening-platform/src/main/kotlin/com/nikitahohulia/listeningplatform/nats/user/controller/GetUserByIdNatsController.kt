@@ -26,7 +26,7 @@ class GetUserByIdNatsController(
         val id = request.userId
 
         return userService.getUserById(id)
-            .map {buildSuccessResponse(it.toProto())}
+            .map { buildSuccessResponse(it.toProto()) }
             .onErrorResume { ex ->
                 buildFailureResponse(
                     ex.javaClass.simpleName,

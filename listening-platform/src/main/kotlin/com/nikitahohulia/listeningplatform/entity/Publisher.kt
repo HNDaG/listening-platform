@@ -1,10 +1,11 @@
 package com.nikitahohulia.listeningplatform.entity
 
+import com.nikitahohulia.listeningplatform.entity.Publisher.Companion.COLLECTION_NAME
 import org.bson.types.ObjectId
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 
-@Document(collection = "publisher")
+@Document(collection = COLLECTION_NAME)
 data class Publisher(
     @Id
     val id: ObjectId? = null,

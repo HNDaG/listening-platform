@@ -29,7 +29,8 @@ class DeleteUserByUsernameNatsController(
                 buildFailureResponse(
                     ex.javaClass.simpleName,
                     ex.toString()
-                ).toMono() }
+                ).toMono()
+            }
     }
 
     private fun buildSuccessResponse(): DeleteUserByUsernameResponse =

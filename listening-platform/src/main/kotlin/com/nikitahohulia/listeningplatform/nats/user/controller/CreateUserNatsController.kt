@@ -28,7 +28,7 @@ class CreateUserNatsController(
         val user = request.user.toEntity()
 
         return userService.createUser(user)
-            .map {buildSuccessResponse(it.toProto())}
+            .map { buildSuccessResponse(it.toProto()) }
             .onErrorResume { ex ->
                 buildFailureResponse(
                     ex.javaClass.simpleName,

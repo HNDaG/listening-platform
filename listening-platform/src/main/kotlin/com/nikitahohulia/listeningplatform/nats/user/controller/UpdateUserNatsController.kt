@@ -30,12 +30,13 @@ class UpdateUserNatsController(
             throw NotFoundException("There is no id passed")
 
         return userService.updateUser(request.user.id, request.user.toEntity())
-            .map {buildSuccessResponse(it.toProto())}
+            .map { buildSuccessResponse(it.toProto()) }
             .onErrorResume { ex ->
                 buildFailureResponse(
                     ex.javaClass.simpleName,
                     ex.toString()
-                ).toMono() }
+                ).toMono()
+            }
     }
 
     private fun buildSuccessResponse(user: User): CreateUserResponse {

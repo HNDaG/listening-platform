@@ -24,13 +24,16 @@ class PublisherServiceImpl(
         return userRepository.findByUsername(username)
             .mapNotNull { it.publisherId }
             .flatMap { publisherRepository.findById(it!!) }
-            .switchIfEmpty { NotFoundException("Publisher with username=$username not found").toMono() }
+            .switchIfEmpty { NotFoundException("Publisher with username=$username not found")
+                .toMono()
+            }
     }
 
     override fun getPublisherByPublisherName(publisherName: String): Mono<Publisher> {
         return publisherRepository.findByPublisherName(publisherName)
             .switchIfEmpty { NotFoundException("Publisher not found with given publisherName = $publisherName")
-                .toMono() }
+                .toMono()
+            }
     }
 
     override fun createPublisher(publisher: Publisher): Mono<Publisher> {

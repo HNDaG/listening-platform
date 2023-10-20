@@ -29,7 +29,8 @@ class DeleteUserByIdNatsController(
                 buildFailureResponse(
                     ex.javaClass.simpleName,
                     ex.toString()
-                ).toMono() }
+                ).toMono()
+            }
     }
 
     private fun buildSuccessResponse(): DeleteUserByIdResponse =
