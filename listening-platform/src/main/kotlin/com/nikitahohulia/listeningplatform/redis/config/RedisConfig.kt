@@ -17,14 +17,12 @@ import org.springframework.data.redis.serializer.StringRedisSerializer
 @Configuration
 class RedisConfig {
 
-    @Value("\${spring.data.redis.host}")
-    lateinit var host: String
-
-    @Value("\${spring.data.redis.port}")
-    lateinit var port: String
 
     @Bean
-    fun reactiveRedisConnectionFactory(): ReactiveRedisConnectionFactory {
+    fun reactiveRedisConnectionFactory(
+        @Value("\${spring.data.redis.host}") host: String,
+        @Value("\${spring.data.redis.port}") port: String,    
+    ): ReactiveRedisConnectionFactory {
         val config = RedisStandaloneConfiguration(host, port.toInt())
         val factory = LettuceConnectionFactory(config)
         factory.afterPropertiesSet()
