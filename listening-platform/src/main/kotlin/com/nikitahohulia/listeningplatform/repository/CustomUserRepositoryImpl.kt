@@ -16,22 +16,12 @@ import reactor.core.publisher.Mono
 @Repository
 class CustomUserRepositoryImpl(private val mongoTemplate: ReactiveMongoTemplate) : CustomUserRepository {
 
-    override fun findById(id: ObjectId): Mono<User> {
-        val query = Query().addCriteria(Criteria.where("id").`is`(id))
-        return mongoTemplate.findOne<User>(query)
-    }
-
     override fun findAll(): Flux<User> {
         return mongoTemplate.findAll<User>()
     }
 
     override fun save(user: User): Mono<User> {
         return mongoTemplate.save(user)
-    }
-
-    override fun deleteById(id: ObjectId): Mono<Long> {
-        val query = Query().addCriteria(Criteria.where("id").`is`(id))
-        return mongoTemplate.remove<User>(query).map { it.deletedCount }
     }
 
     override fun findByUsername(username: String): Mono<User> {

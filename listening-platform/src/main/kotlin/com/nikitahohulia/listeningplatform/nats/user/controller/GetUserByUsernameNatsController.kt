@@ -5,8 +5,8 @@ import com.nikitahohulia.listeningplatform.dto.response.toProto
 import com.nikitahohulia.listeningplatform.service.UserService
 import com.nikitahohulia.api.internal.v2.usersvc.NatsSubject
 import com.nikitahohulia.api.internal.v2.usersvc.commonmodels.user.User
-import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.get_by_id.proto.GetUserByUsernameRequest
-import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.get_by_id.proto.GetUserByUsernameResponse
+import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.get_by_username.proto.GetUserByUsernameRequest
+import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.get_by_username.proto.GetUserByUsernameResponse
 import com.nikitahohulia.listeningplatform.nats.NatsController
 import io.nats.client.Connection
 import org.springframework.stereotype.Component

@@ -1,12 +1,9 @@
 package com.nikitahohulia.listeningplatform.redis.repositiry
 
 import com.nikitahohulia.listeningplatform.entity.User
-import org.bson.types.ObjectId
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.redis.core.ReactiveRedisTemplate
-import org.springframework.data.redis.core.ScanOptions
 import org.springframework.stereotype.Repository
-import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
 import java.time.Duration

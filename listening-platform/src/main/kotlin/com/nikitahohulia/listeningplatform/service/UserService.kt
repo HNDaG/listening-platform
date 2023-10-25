@@ -12,15 +12,11 @@ interface UserService {
 
     fun becamePublisher(username: String, publisher: Publisher): Mono<Publisher>
 
-    fun updateUser(id: String, user: User): Mono<User>
+    fun updateUser(oldUsername: String, user: User): Mono<User>
 
     fun getUserByUsername(username: String): Mono<User>
 
-    fun getUserById(id: String): Mono<User>
-
     fun getAllUsers(): Flux<User>
-
-    fun deleteUserById(id: String): Mono<Unit>
 
     fun deleteUserByUsername(username: String): Mono<Unit>
 

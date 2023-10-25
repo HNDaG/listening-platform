@@ -5,6 +5,7 @@ import com.nikitahohulia.listeningplatform.entity.Post
 import com.nikitahohulia.listeningplatform.entity.Publisher
 import com.nikitahohulia.listeningplatform.exception.DuplicateException
 import com.nikitahohulia.listeningplatform.exception.NotFoundException
+import com.nikitahohulia.listeningplatform.redis.repositiry.UserRedisRepository
 import com.nikitahohulia.listeningplatform.repository.CustomPostRepository
 import com.nikitahohulia.listeningplatform.repository.CustomUserRepository
 import com.nikitahohulia.listeningplatform.repository.CustomPublisherRepository
@@ -17,7 +18,8 @@ import reactor.kotlin.core.publisher.toMono
 class PublisherServiceImpl(
     private val publisherRepository: CustomPublisherRepository,
     private val postRepository: CustomPostRepository,
-    private val userRepository: CustomUserRepository
+    private val userRepository: CustomUserRepository,
+    private val redisUserRepository: UserRedisRepository
 ) : PublisherService {
 
     override fun getPublisherByUsername(username: String): Mono<Publisher> {
@@ -50,7 +52,10 @@ class PublisherServiceImpl(
     override fun deletePublisher(publisherName: String): Mono<Unit> {
         return publisherRepository.findByPublisherName(publisherName)
             .flatMap { publisher -> publisher.id?.let { userRepository.findByPublisherId(it) } ?: Mono.empty() }
-            .flatMap { user -> userRepository.save(user.copy(publisherId = null)) }
+            .flatMap { user ->
+                userRepository.save(user.copy(publisherId = null))
+                redisUserRepository.update(user.copy(publisherId = null))
+            }
             .then(publisherRepository.deleteByPublisherName(publisherName)
                     .handle { deletedCount, sync ->
                         if (deletedCount == 0L) {

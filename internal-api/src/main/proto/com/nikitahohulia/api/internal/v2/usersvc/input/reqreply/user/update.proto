@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.create.proto;
+package com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.update.proto;
 
 option java_multiple_files = true;
 
@@ -8,6 +8,7 @@ import "com/nikitahohulia/api/internal/v2/usersvc/commonmodels/user/user.proto";
 
 message UpdateUserRequest {
   commonmodels.user.User user = 1;
+  string oldUsername = 2;
 }
 
 message UpdateUserResponse {
