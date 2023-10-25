@@ -9,7 +9,6 @@ import com.nikitahohulia.listeningplatform.redis.repositiry.UserRedisRepository
 import com.nikitahohulia.listeningplatform.repository.CustomPostRepository
 import com.nikitahohulia.listeningplatform.repository.CustomUserRepository
 import com.nikitahohulia.listeningplatform.repository.CustomPublisherRepository
-import org.bson.types.ObjectId
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
