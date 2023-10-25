@@ -18,8 +18,6 @@ class UserRedisRepositoryImpl(
 
     @Value("\${redis.key.user-username-prefix}")
     private lateinit var prefix: String
-
-
     override fun findByUsername(username: String): Mono<User> {
         return redisTemplate.opsForValue().get(prefix + username)
     }
