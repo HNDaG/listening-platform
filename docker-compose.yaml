@@ -8,6 +8,8 @@ services:
         condition: service_healthy
       nats-server:
         condition: service_started
+      redis:
+        condition: service_healthy
     ports:
       - "8080:8080"
 
@@ -38,3 +40,10 @@ services:
       interval: 1s
       timeout: 1s
       retries: 5
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
