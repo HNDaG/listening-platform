@@ -47,5 +47,3 @@ fun NatsUser.toEntity(): User {
         password = password
     )
 }
-
-

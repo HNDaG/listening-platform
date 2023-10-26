@@ -1,7 +1,7 @@
-package com.nikitahohulia.listeningplatform.redis.config
+package com.nikitahohulia.listeningplatform.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.nikitahohulia.listeningplatform.entity.User
+import com.nikitahohulia.listeningplatform.entity.redis.RedisUser
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
@@ -17,7 +17,6 @@ import org.springframework.data.redis.serializer.StringRedisSerializer
 @Configuration
 class RedisConfig {
 
-
     @Bean
     fun reactiveRedisConnectionFactory(
         @Value("\${spring.data.redis.host}") host: String,
@@ -32,14 +31,13 @@ class RedisConfig {
     @Bean
     fun reactiveRedisTemplate(
         @Qualifier("reactiveRedisConnectionFactory") connectionFactory: ReactiveRedisConnectionFactory
-    ): ReactiveRedisTemplate<String, User> {
+    ): ReactiveRedisTemplate<String, RedisUser> {
         val objectMapper = ObjectMapper().findAndRegisterModules()
-        val serializer = Jackson2JsonRedisSerializer(objectMapper, User::class.java)
+        val serializer = Jackson2JsonRedisSerializer(objectMapper, RedisUser::class.java)
         val context = RedisSerializationContext
-            .newSerializationContext<String, User>(StringRedisSerializer())
+            .newSerializationContext<String, RedisUser>(StringRedisSerializer())
             .value(serializer)
             .build()
         return ReactiveRedisTemplate(connectionFactory, context)
     }
-
 }

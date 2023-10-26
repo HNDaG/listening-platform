@@ -1,14 +1,15 @@
 package com.nikitahohulia.listeningplatform.service
 
-import reactor.kotlin.core.publisher.switchIfEmpty
 import com.nikitahohulia.listeningplatform.entity.Post
 import com.nikitahohulia.listeningplatform.entity.Publisher
+import reactor.kotlin.core.publisher.switchIfEmpty
 import com.nikitahohulia.listeningplatform.exception.DuplicateException
 import com.nikitahohulia.listeningplatform.exception.NotFoundException
-import com.nikitahohulia.listeningplatform.redis.repositiry.UserRedisRepository
-import com.nikitahohulia.listeningplatform.repository.CustomPostRepository
-import com.nikitahohulia.listeningplatform.repository.CustomUserRepository
-import com.nikitahohulia.listeningplatform.repository.CustomPublisherRepository
+import com.nikitahohulia.listeningplatform.repository.PostRepository
+import com.nikitahohulia.listeningplatform.repository.UserRepository
+import com.nikitahohulia.listeningplatform.repository.PublisherRepository
+import com.nikitahohulia.listeningplatform.repository.redis.UserRedisRepository
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -16,9 +17,9 @@ import reactor.kotlin.core.publisher.toMono
 
 @Service
 class PublisherServiceImpl(
-    private val publisherRepository: CustomPublisherRepository,
-    private val postRepository: CustomPostRepository,
-    private val userRepository: CustomUserRepository,
+    private val publisherRepository: PublisherRepository,
+    private val postRepository: PostRepository,
+    @Qualifier("cacheableUserRepository") private val userRepository: UserRepository,
     private val redisUserRepository: UserRedisRepository
 ) : PublisherService {
 
@@ -54,20 +55,22 @@ class PublisherServiceImpl(
             .flatMap { publisher -> publisher.id?.let { userRepository.findByPublisherId(it) } ?: Mono.empty() }
             .flatMap { user ->
                 userRepository.save(user.copy(publisherId = null))
-                redisUserRepository.update(user.copy(publisherId = null))
+                    .then(redisUserRepository.update(user.copy(publisherId = null))) // todo: fix this
             }
             .then(publisherRepository.deleteByPublisherName(publisherName)
                     .handle { deletedCount, sync ->
                         if (deletedCount == 0L) {
                             sync.error(NotFoundException("Publisher with publisherName - $publisherName not found"))
-                        } else Mono.just(Unit)
+                        }
                     }
             )
     }
 
     override fun postContent(publisherName: String, content: String): Mono<Post> {
         return publisherRepository.findByPublisherName(publisherName)
-            .flatMap { publisher -> postRepository.save(Post(creatorId = publisher.id!!, content = content)) }
+            .flatMap { publisher ->
+                postRepository.save(Post(creatorId = publisher.id!!, content = content))
+            }
             .switchIfEmpty { NotFoundException("Internal error, failed to save new post").toMono() }
     }
 
@@ -79,8 +82,8 @@ class PublisherServiceImpl(
             .flatMapMany { publisher -> findAllPostsByCreatorIdOrderByCreatedAt(publisher) }
     }
 
-    private fun findAllPostsByCreatorIdOrderByCreatedAt(publisher: Publisher): Flux<Post> {
-        val publisherId = publisher.id!!
+    private fun findAllPostsByCreatorIdOrderByCreatedAt(mongoPublisher: Publisher): Flux<Post> {
+        val publisherId = mongoPublisher.id!!
         return postRepository.findAllPostsByCreatorIdOrderByCreatedAt(publisherId)
             .switchIfEmpty (NotFoundException("Publisher not found with given id = ${publisherId.toHexString()}")
                 .toMono())

@@ -1,8 +1,7 @@
-package com.nikitahohulia.listeningplatform.redis.repositiry
+package com.nikitahohulia.listeningplatform.repository.redis
 
 import com.nikitahohulia.listeningplatform.entity.User
 import reactor.core.publisher.Mono
-
 
 interface UserRedisRepository {
 

@@ -44,4 +44,3 @@ class DeleteUserByUsernameNatsController(
                 .setMessage("User deleteByUsername failed by $exception: $message")
         }.build()
 }
-

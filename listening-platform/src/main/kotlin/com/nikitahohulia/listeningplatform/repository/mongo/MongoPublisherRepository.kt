@@ -1,6 +1,10 @@
-package com.nikitahohulia.listeningplatform.repository
+package com.nikitahohulia.listeningplatform.repository.mongo
 
 import com.nikitahohulia.listeningplatform.entity.Publisher
+import com.nikitahohulia.listeningplatform.entity.mongo.MongoPublisher
+import com.nikitahohulia.listeningplatform.entity.mongo.toEntity
+import com.nikitahohulia.listeningplatform.entity.mongo.toMongo
+import com.nikitahohulia.listeningplatform.repository.PublisherRepository
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate
 import org.springframework.data.mongodb.core.findAll
@@ -13,28 +17,32 @@ import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
 @Repository
-class CustomPublisherRepositoryImpl(private val mongoTemplate: ReactiveMongoTemplate) : CustomPublisherRepository {
+class MongoPublisherRepository(private val mongoTemplate: ReactiveMongoTemplate) : PublisherRepository {
 
     override fun findById(id: ObjectId): Mono<Publisher> {
         val query = Query().addCriteria(Criteria.where("id").`is`(id))
-        return mongoTemplate.findOne<Publisher>(query)
+        return mongoTemplate.findOne<MongoPublisher>(query)
+            .map { it.toEntity() }
     }
 
     override fun findAll(): Flux<Publisher> {
-        return mongoTemplate.findAll<Publisher>()
+        return mongoTemplate.findAll<MongoPublisher>()
+            .map { it.toEntity() }
     }
 
     override fun save(publisher: Publisher): Mono<Publisher> {
-        return mongoTemplate.save(publisher)
+        return mongoTemplate.save(publisher.toMongo())
+            .map { it.toEntity() }
     }
 
     override fun findByPublisherName(publisherName: String): Mono<Publisher> {
         val query = Query().addCriteria(Criteria.where("publisherName").`is`(publisherName))
-        return mongoTemplate.findOne<Publisher>(query)
+        return mongoTemplate.findOne<MongoPublisher>(query)
+            .map { it.toEntity() }
     }
 
     override fun deleteByPublisherName(publisherName: String): Mono<Long> {
         val query = Query().addCriteria(Criteria.where("publisherName").`is`(publisherName))
-        return mongoTemplate.remove<Publisher>(query).map { it.deletedCount }
+        return mongoTemplate.remove<MongoPublisher>(query).map { it.deletedCount }
     }
 }

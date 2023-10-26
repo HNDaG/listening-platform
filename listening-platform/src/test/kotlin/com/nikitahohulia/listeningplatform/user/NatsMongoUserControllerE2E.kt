@@ -23,22 +23,24 @@ import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.update.proto.Upd
 import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.update.proto.UpdateUserResponse
 import com.nikitahohulia.listeningplatform.dto.response.toProto
 import com.nikitahohulia.listeningplatform.entity.User
-import com.nikitahohulia.listeningplatform.repository.CustomUserRepository
+import com.nikitahohulia.listeningplatform.repository.UserRepository
 import io.nats.client.Connection
 import net.datafaker.Faker
 import org.bson.types.ObjectId
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import java.time.Duration
 
 @E2ETest
-class NatsUserControllerE2E {
+class NatsMongoUserControllerE2E {
 
     @Autowired
     private lateinit var natsConnection: Connection
 
+    @Qualifier("cacheableUserRepository")
     @Autowired
-    private lateinit var userRepository: CustomUserRepository
+    private lateinit var userRepository: UserRepository
 
     private val faker = Faker()
 
