@@ -23,6 +23,9 @@ jobs:
       - name: Start NATS container
         run: docker run -d --name nats-server -p 4222:4222 nats:latest
 
+      - name: Start Redis container
+        run: docker run -d --name redis -p 6379:6379 redis:latest
+
       - name: Setup JDK
         uses: actions/setup-java@v3
         with:

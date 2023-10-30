@@ -1,7 +1,11 @@
-package com.nikitahohulia.listeningplatform.repository
+package com.nikitahohulia.listeningplatform.repository.mongo
 
 import com.nikitahohulia.listeningplatform.entity.User
+import com.nikitahohulia.listeningplatform.entity.mongo.MongoUser
+import com.nikitahohulia.listeningplatform.entity.mongo.toEntity
+import com.nikitahohulia.listeningplatform.entity.mongo.toMongo
 import com.nikitahohulia.listeningplatform.exception.NotFoundException
+import com.nikitahohulia.listeningplatform.repository.UserRepository
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate
 import org.springframework.data.mongodb.core.findAll
@@ -14,39 +18,29 @@ import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
 @Repository
-class CustomUserRepositoryImpl(private val mongoTemplate: ReactiveMongoTemplate) : CustomUserRepository {
-
-    override fun findById(id: ObjectId): Mono<User> {
-        val query = Query().addCriteria(Criteria.where("id").`is`(id))
-        return mongoTemplate.findOne<User>(query)
-    }
+class MongoUserRepository(private val mongoTemplate: ReactiveMongoTemplate) : UserRepository {
 
     override fun findAll(): Flux<User> {
-        return mongoTemplate.findAll<User>()
+        return mongoTemplate.findAll<MongoUser>().map { it.toEntity() }
     }
 
     override fun save(user: User): Mono<User> {
-        return mongoTemplate.save(user)
-    }
-
-    override fun deleteById(id: ObjectId): Mono<Long> {
-        val query = Query().addCriteria(Criteria.where("id").`is`(id))
-        return mongoTemplate.remove<User>(query).map { it.deletedCount }
+        return mongoTemplate.save(user.toMongo()).map { it.toEntity() }
     }
 
     override fun findByUsername(username: String): Mono<User> {
         val query = Query().addCriteria(Criteria.where("username").`is`(username))
-        return mongoTemplate.findOne<User>(query)
+        return mongoTemplate.findOne<MongoUser>(query).map { it.toEntity() }
     }
 
     override fun deleteUserByUsername(username: String): Mono<Long> {
         val query = Query().addCriteria(Criteria.where("username").`is`(username))
-        return mongoTemplate.remove<User>(query).map { it.deletedCount }
+        return mongoTemplate.remove<MongoUser>(query).map { it.deletedCount }
     }
 
     override fun findByPublisherId(publisherId: ObjectId): Mono<User> {
         val query = Query().addCriteria(Criteria.where("publisherId").`is`(publisherId))
-        return mongoTemplate.findOne<User>(query)
+        return mongoTemplate.findOne<MongoUser>(query).map { it.toEntity() }
     }
 
     override fun findPublisherIdsByUsername(username: String): Flux<ObjectId> {

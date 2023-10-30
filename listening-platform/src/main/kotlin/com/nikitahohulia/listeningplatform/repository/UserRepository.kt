@@ -5,15 +5,10 @@ import org.bson.types.ObjectId
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
-interface CustomUserRepository {
-
-    fun findById(id: ObjectId): Mono<User>
-
+interface UserRepository {
     fun findAll(): Flux<User>
 
     fun save(user: User): Mono<User>
-
-    fun deleteById(id: ObjectId): Mono<Long>
 
     fun findByUsername(username: String): Mono<User>
 

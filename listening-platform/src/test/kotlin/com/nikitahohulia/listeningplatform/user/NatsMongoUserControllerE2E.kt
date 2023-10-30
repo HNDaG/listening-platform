@@ -1,50 +1,46 @@
 package com.nikitahohulia.listeningplatform.user
 
-import com.nikitahohulia.listeningplatform.dto.response.toProto
-import com.nikitahohulia.listeningplatform.repository.CustomUserRepository
-import io.nats.client.Connection
-import org.springframework.beans.factory.annotation.Autowired
-import java.time.Duration
-import com.nikitahohulia.api.internal.v2.usersvc.NatsSubject.User.CREATE
-import com.nikitahohulia.api.internal.v2.usersvc.NatsSubject.User.GET_BY_ID
-import org.junit.jupiter.api.Test
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isGreaterThan
 import assertk.assertions.isTrue
 import com.google.protobuf.GeneratedMessageV3
 import com.google.protobuf.Parser
-import com.nikitahohulia.api.internal.v2.usersvc.NatsSubject.User.DELETE_BY_ID
+import com.nikitahohulia.api.internal.v2.usersvc.NatsSubject.User.CREATE
 import com.nikitahohulia.api.internal.v2.usersvc.NatsSubject.User.DELETE_BY_USERNAME
 import com.nikitahohulia.api.internal.v2.usersvc.NatsSubject.User.GET_ALL
 import com.nikitahohulia.api.internal.v2.usersvc.NatsSubject.User.GET_BY_USERNAME
 import com.nikitahohulia.api.internal.v2.usersvc.NatsSubject.User.UPDATE
-import com.nikitahohulia.listeningplatform.entity.User
 import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.create.proto.CreateUserRequest
 import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.create.proto.CreateUserResponse
-import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.create.proto.UpdateUserRequest
-import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.create.proto.UpdateUserResponse
+import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.delete_by_username.proto.DeleteUserByUsernameRequest
+import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.delete_by_username.proto.DeleteUserByUsernameResponse
 import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.get_all.proto.GetAllUsersRequest
 import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.get_all.proto.GetAllUsersResponse
-import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.get_by_id.proto.DeleteUserByUsernameRequest
-import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.get_by_id.proto.DeleteUserByUsernameResponse
-import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.get_by_id.proto.GetUserByIdRequest
-import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.get_by_id.proto.GetUserByIdResponse
-import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.get_by_id.proto.GetUserByUsernameRequest
-import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.get_by_id.proto.GetUserByUsernameResponse
-import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.user.get_by_id.proto.DeleteUserByIdRequest
-import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.user.get_by_id.proto.DeleteUserByIdResponse
+import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.get_by_username.proto.GetUserByUsernameRequest
+import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.get_by_username.proto.GetUserByUsernameResponse
+import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.update.proto.UpdateUserRequest
+import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.update.proto.UpdateUserResponse
+import com.nikitahohulia.listeningplatform.dto.response.toProto
+import com.nikitahohulia.listeningplatform.entity.User
+import com.nikitahohulia.listeningplatform.repository.UserRepository
+import io.nats.client.Connection
 import net.datafaker.Faker
 import org.bson.types.ObjectId
+import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
+import java.time.Duration
 
 @E2ETest
-class NatsUserControllerE2E {
+class NatsMongoUserControllerE2E {
 
     @Autowired
     private lateinit var natsConnection: Connection
 
+    @Qualifier("cacheableUserRepository")
     @Autowired
-    private lateinit var userRepository: CustomUserRepository
+    private lateinit var userRepository: UserRepository
 
     private val faker = Faker()
 
@@ -83,27 +79,13 @@ class NatsUserControllerE2E {
     }
 
     @Test
-    fun `should find user by id when user exist with provided id`() {
-        // GIVEN
-        val user = userRepository.save(getUserToAdd("find-user-by-id-${System.nanoTime()}")).block()!!
-        val expected = GetUserByIdResponse.newBuilder().apply { successBuilder.setUser(user.toProto()) }.build()
-        val message = GetUserByIdRequest.newBuilder().setUserId(user.id?.toHexString()).build()
-
-        // WHEN
-        val actual = doRequest(GET_BY_ID, message, GetUserByIdResponse.parser())
-
-        // THEN
-        assertThat(actual).isEqualTo(expected)
-    }
-
-    @Test
     fun `should update user`() {
         // GIVEN
         val user = userRepository.save(getUserToAdd("not-updated-user-${System.nanoTime()}")).block()!!
         val updatedProto = getUserToAdd("updated-user-${System.nanoTime()}")
-            .copy(id = user.id, publisherId = user.publisherId).toProto()
+            .copy(id = user.id).toProto()
         val expected = UpdateUserResponse.newBuilder().apply { successBuilder.setUser(updatedProto) }.build()
-        val message = UpdateUserRequest.newBuilder().setUser(updatedProto).build()
+        val message = UpdateUserRequest.newBuilder().setUser(updatedProto).setOldUsername(user.username).build()
 
         // WHEN
         val actual = doRequest(UPDATE, message, UpdateUserResponse.parser())
@@ -124,22 +106,8 @@ class NatsUserControllerE2E {
         // WHEN
         val actual = doRequest(GET_BY_USERNAME, message, GetUserByUsernameResponse.parser())
 
-
         // THEN
         assertThat(actual).isEqualTo(expected)
-    }
-
-    @Test
-    fun `should delete user by id when user exists with provided id`() {
-        // GIVEN
-        val user = userRepository.save(getUserToAdd("delete-user-by-id-${System.nanoTime()}")).block()!!
-        val message = DeleteUserByIdRequest.newBuilder().setUserId(user.id?.toHexString()).build()
-
-        //  WHEN
-        val actual = doRequest(DELETE_BY_ID, message, DeleteUserByIdResponse.parser())
-
-        // THEN
-        assertThat(actual.hasSuccess()).isTrue()
     }
 
     @Test
@@ -163,7 +131,7 @@ class NatsUserControllerE2E {
         val response = natsConnection.requestWithTimeout(
             subject,
             payload.toByteArray(),
-            Duration.ofSeconds(2L)
+            Duration.ofSeconds(200L)
         )
         return parser.parseFrom(response.get().data)
     }

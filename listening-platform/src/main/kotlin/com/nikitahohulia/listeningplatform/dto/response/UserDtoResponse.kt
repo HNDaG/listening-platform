@@ -3,7 +3,6 @@ package com.nikitahohulia.listeningplatform.dto.response
 import com.nikitahohulia.listeningplatform.entity.User
 import com.nikitahohulia.api.internal.v2.usersvc.commonmodels.user.User as NatsUser
 
-
 data class UserDtoResponse(
     val id: String,
     val username: String,

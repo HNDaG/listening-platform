@@ -5,10 +5,10 @@ import com.nikitahohulia.listeningplatform.entity.Publisher
 import com.nikitahohulia.listeningplatform.entity.User
 import com.nikitahohulia.listeningplatform.exception.DuplicateException
 import com.nikitahohulia.listeningplatform.exception.NotFoundException
-import com.nikitahohulia.listeningplatform.repository.CustomPostRepository
-import com.nikitahohulia.listeningplatform.repository.CustomUserRepository
-import com.nikitahohulia.listeningplatform.repository.CustomPublisherRepository
-import org.bson.types.ObjectId
+import com.nikitahohulia.listeningplatform.repository.PostRepository
+import com.nikitahohulia.listeningplatform.repository.PublisherRepository
+import com.nikitahohulia.listeningplatform.repository.UserRepository
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -19,19 +19,14 @@ import reactor.kotlin.core.util.function.component2
 
 @Service
 class UserServiceImpl(
-    private val userRepository: CustomUserRepository,
-    private val publisherRepository: CustomPublisherRepository,
-    private val postRepository: CustomPostRepository
+    @Qualifier("cacheableUserRepository") private val userRepository: UserRepository,
+    private val publisherRepository: PublisherRepository,
+    private val postRepository: PostRepository
 ) : UserService {
 
     override fun getUserByUsername(username: String): Mono<User> {
         return userRepository.findByUsername(username)
-            .switchIfEmpty { NotFoundException("User not found with given username = $username").toMono() }
-    }
-
-    override fun getUserById(id: String): Mono<User> {
-        return userRepository.findById(ObjectId(id))
-            .switchIfEmpty { NotFoundException("User not found with given id = $id").toMono() }
+            .switchIfEmpty(NotFoundException(message = "User not found with username = $username").toMono())
     }
 
     override fun createUser(user: User): Mono<User> {
@@ -39,11 +34,13 @@ class UserServiceImpl(
             .handle<User> { _, sync ->
                 sync.error(DuplicateException("User with this username already exists"))
             }
-            .switchIfEmpty(userRepository.save(user))
+            .switchIfEmpty {
+                userRepository.save(user)
+            }
     }
 
     override fun becamePublisher(
-        username: String,
+        username: String, 
         publisher: Publisher
     ): Mono<Publisher> {
         return publisherRepository.findByPublisherName(publisher.publisherName)
@@ -52,39 +49,32 @@ class UserServiceImpl(
             }
             .switchIfEmpty {
                 userRepository.findByUsername(username)
-                    .filter { user -> user.publisherId != null }
+                    .filter { user -> user.publisherId == null }
                     .switchIfEmpty { DuplicateException("User is already a publisher").toMono() }
                     .zipWhen { publisherRepository.save(publisher) }
                     .flatMap { (user, newPublisher) ->
                         val userAsPublisher = user.copy(publisherId = newPublisher.id)
-                        userRepository.save(userAsPublisher).thenReturn(newPublisher)
+                        userRepository.save(userAsPublisher)
+                            .thenReturn(newPublisher)
                     }
             }
     }
 
 
-    override fun updateUser(id: String, user: User): Mono<User> {
-        return userRepository.findById(ObjectId(id))
-            .switchIfEmpty { NotFoundException("User not found with given id = $id").toMono() }
-            .flatMap { userRepository.save(user.copy(id = ObjectId(id))) }
+    override fun updateUser(oldUsername: String, user: User): Mono<User> {
+        return userRepository.findByUsername(oldUsername)
+            .switchIfEmpty { NotFoundException("User not found with username = $oldUsername").toMono() }
+            .flatMap {
+                userRepository.save(user.copy(id = it.id))
+            }
     }
 
     override fun getAllUsers(): Flux<User> {
         return userRepository.findAll()
     }
 
-    override fun deleteUserById(id: String): Mono<Unit> {
-        return userRepository.deleteById(ObjectId(id))
-            .handle { deletedCount, sync ->
-                if (deletedCount == 0L) {
-                    sync.error(NotFoundException("User with ID - $id not found"))
-                }
-            }
-    }
-
     override fun deleteUserByUsername(username: String): Mono<Unit> {
-        return userRepository.deleteUserByUsername(username)
-            .handle { deletedCount, sync ->
+        return userRepository.deleteUserByUsername(username).handle { deletedCount, sync ->
                 if (deletedCount == 0L) {
                     sync.error(NotFoundException("User with username - $username not found"))
                 }
@@ -98,8 +88,7 @@ class UserServiceImpl(
             .flatMap { (user, publisher) ->
                 user.subscriptions.add(publisher.id!!)
                 userRepository.save(user)
-            }
-            .thenReturn(Unit)
+            }.thenReturn(Unit)
     }
 
     override fun getPostsFromFollowedCreators(username: String, page: Int): Flux<Post> {

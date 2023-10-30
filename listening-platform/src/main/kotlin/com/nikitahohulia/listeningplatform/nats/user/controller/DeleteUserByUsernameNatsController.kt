@@ -3,8 +3,8 @@ package com.nikitahohulia.listeningplatform.nats.user.controller
 import com.google.protobuf.Parser
 import com.nikitahohulia.listeningplatform.service.UserService
 import com.nikitahohulia.api.internal.v2.usersvc.NatsSubject
-import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.get_by_id.proto.DeleteUserByUsernameRequest
-import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.get_by_id.proto.DeleteUserByUsernameResponse
+import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.delete_by_username.proto.DeleteUserByUsernameRequest
+import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.delete_by_username.proto.DeleteUserByUsernameResponse
 import com.nikitahohulia.listeningplatform.nats.NatsController
 import io.nats.client.Connection
 import org.springframework.stereotype.Component
@@ -44,4 +44,3 @@ class DeleteUserByUsernameNatsController(
                 .setMessage("User deleteByUsername failed by $exception: $message")
         }.build()
 }
-
