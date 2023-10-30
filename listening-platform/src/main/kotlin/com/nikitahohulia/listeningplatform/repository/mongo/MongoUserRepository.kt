@@ -40,7 +40,7 @@ class MongoUserRepository(private val mongoTemplate: ReactiveMongoTemplate) : Us
 
     override fun findByPublisherId(publisherId: ObjectId): Mono<User> {
         val query = Query().addCriteria(Criteria.where("publisherId").`is`(publisherId))
-        return mongoTemplate.findOne<MongoUser>(query).map { it.toEntity()}
+        return mongoTemplate.findOne<MongoUser>(query).map { it.toEntity() }
     }
 
     override fun findPublisherIdsByUsername(username: String): Flux<ObjectId> {

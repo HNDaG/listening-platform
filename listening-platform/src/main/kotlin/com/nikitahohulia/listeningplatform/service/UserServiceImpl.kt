@@ -50,7 +50,8 @@ class UserServiceImpl(
                 userRepository.findByUsername(username)
                     .filter { user -> user.publisherId == null }
                     .switchIfEmpty { DuplicateException("User is already a publisher").toMono() }
-                    .zipWhen { publisherRepository.save(publisher) }.flatMap { (user, newPublisher) ->
+                    .zipWhen { publisherRepository.save(publisher) }
+                    .flatMap { (user, newPublisher) ->
                         val userAsPublisher = user.copy(publisherId = newPublisher.id)
                         userRepository.save(userAsPublisher)
                             .thenReturn(newPublisher)
