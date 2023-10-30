@@ -40,7 +40,8 @@ class UserServiceImpl(
     }
 
     override fun becamePublisher(
-        username: String, publisher: Publisher
+        username: String, 
+        publisher: Publisher
     ): Mono<Publisher> {
         return publisherRepository.findByPublisherName(publisher.publisherName)
             .handle<Publisher> { _, sync ->
