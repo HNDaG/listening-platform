@@ -55,7 +55,7 @@ class PublisherServiceImpl(
             .flatMap { publisher -> publisher.id?.let { userRepository.findByPublisherId(it) } ?: Mono.empty() }
             .flatMap { user ->
                 userRepository.save(user.copy(publisherId = null))
-                    .then(redisUserRepository.update(user.copy(publisherId = null))) // todo: fix this
+                    .then(redisUserRepository.update(user.copy(publisherId = null)))
             }
             .then(publisherRepository.deleteByPublisherName(publisherName)
                     .handle { deletedCount, sync ->
