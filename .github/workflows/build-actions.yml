@@ -13,8 +13,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Starting services with docker-compose
-        run: docker-compose -f "docker-compose-local.yaml" up -d
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Start MongoDB container
+        run: |
+          docker run -d --name localmongo -p 27017:27017 \
+            -e MONGO_INITDB_ROOT_USERNAME=root \
+            -e MONGO_INITDB_ROOT_PASSWORD=secret \
+            mongo:latest
+      - name: Start NATS container
+        run: docker run -d --name nats-server -p 4222:4222 nats:latest
+
+      - name: Start Redis container
+        run: docker run -d --name redis -p 6379:6379 redis:latest
 
       - name: Setup JDK
         uses: actions/setup-java@v3
