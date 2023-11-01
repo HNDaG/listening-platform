@@ -26,8 +26,6 @@ class KafkaProducer (
             ),
             null
         )
-        println(senderRecord)
-        println("Sending message to ${KafkaTopic.User.UPDATE}")
         kafkaSenderUpdatedUserEvent.send(senderRecord.toMono()).subscribe()
     }
 }

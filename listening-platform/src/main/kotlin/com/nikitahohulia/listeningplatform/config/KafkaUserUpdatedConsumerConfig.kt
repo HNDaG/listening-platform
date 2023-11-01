@@ -1,5 +1,6 @@
 package com.nikitahohulia.listeningplatform.config
 
+import com.google.protobuf.Message
 import com.nikitahohulia.api.internal.v2.usersvc.KafkaTopic
 import io.confluent.kafka.serializers.protobuf.KafkaProtobufDeserializer
 import org.apache.kafka.clients.consumer.ConsumerConfig
@@ -12,14 +13,14 @@ import reactor.kafka.receiver.ReceiverOptions
 import java.util.Collections
 
 @Configuration
-class KafkaConsumerConfig (
+class KafkaUserUpdatedConsumerConfig (
     @Value("\${spring.kafka.bootstrap-servers}") private val bootstrapServers: String,
     @Value("\${spring.kafka.properties.schema.registry.url}") private val schemaRegistryUrl: String
 ) {
 
     @Bean
-    fun receiverOptions(): ReceiverOptions<String, ByteArray> {
-        return ReceiverOptions.create<String, ByteArray>(
+    fun receiverOptions(): ReceiverOptions<String, Message> {
+        return ReceiverOptions.create<String, Message>(
             mapOf(
                 ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG to bootstrapServers,
                 ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG to StringDeserializer::class.java,
@@ -33,8 +34,8 @@ class KafkaConsumerConfig (
 
     @Bean
     fun reactiveKafkaConsumerTemplate(
-        receiverOptions: ReceiverOptions<String, ByteArray>
-    ): ReactiveKafkaConsumerTemplate<String, ByteArray> {
+        receiverOptions: ReceiverOptions<String, Message>
+    ): ReactiveKafkaConsumerTemplate<String, Message> {
         return ReactiveKafkaConsumerTemplate(receiverOptions)
     }
 }

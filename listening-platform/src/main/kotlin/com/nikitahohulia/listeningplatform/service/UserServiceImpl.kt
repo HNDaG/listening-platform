@@ -59,6 +59,7 @@ class UserServiceImpl(
                     .flatMap { (user, newPublisher) ->
                         val userAsPublisher = user.copy(publisherId = newPublisher.id)
                         userRepository.save(userAsPublisher)
+                            .doOnNext { kafkaUserProducer.sendUserUpdatedEventToKafka(it.toResponse().toProto()) }
                             .thenReturn(newPublisher)
                     }
             }
@@ -69,9 +70,7 @@ class UserServiceImpl(
         return userRepository.findByUsername(oldUsername)
             .switchIfEmpty { NotFoundException("User not found with username = $oldUsername").toMono() }
             .flatMap { userRepository.save(user.copy(id = it.id)) }
-            .doOnNext {
-                println("Calling send from kafkaUserProducer")
-                kafkaUserProducer.sendUserUpdatedEventToKafka(it.toResponse().toProto()) }
+            .doOnNext { kafkaUserProducer.sendUserUpdatedEventToKafka(it.toResponse().toProto()) }
             .flatMap { userRepository.findByUsername(it.username) }
     }
 
@@ -80,7 +79,8 @@ class UserServiceImpl(
     }
 
     override fun deleteUserByUsername(username: String): Mono<Unit> {
-        return userRepository.deleteUserByUsername(username).handle { deletedCount, sync ->
+        return userRepository.deleteUserByUsername(username)
+            .handle { deletedCount, sync ->
                 if (deletedCount == 0L) {
                     sync.error(NotFoundException("User with username - $username not found"))
                 }
@@ -94,7 +94,9 @@ class UserServiceImpl(
             .flatMap { (user, publisher) ->
                 user.subscriptions.add(publisher.id!!)
                 userRepository.save(user)
-            }.thenReturn(Unit)
+            }
+            .doOnNext { kafkaUserProducer.sendUserUpdatedEventToKafka(it.toResponse().toProto()) }
+            .thenReturn(Unit)
     }
 
     override fun getPostsFromFollowedCreators(username: String, page: Int): Flux<Post> {

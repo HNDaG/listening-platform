@@ -1,26 +1,9 @@
 version: "3.8"
 
 services:
-  app:
-    build: .
-    depends_on:
-      mongodb:
-        condition: service_healthy
-      nats-server:
-        condition: service_started
-      redis:
-        condition: service_healthy
-      kafka-lp:
-        condition: service_started
-      schema-registry-lp:
-        condition: service_started
-
-    ports:
-      - "8080:8080"
-
   mongodb:
     image: mongo:latest
-    container_name: mongo-db
+    container_name: localmongo
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=secret
@@ -38,6 +21,8 @@ services:
   nats-server:
     image: nats:latest
     container_name: nats-server
+    environment:
+      - NATS_URL=nats://localhost:4222
     ports:
       - "4222:4222"
     healthcheck:
@@ -48,6 +33,9 @@ services:
 
   redis:
     image: redis:latest
+    environment:
+      - REDIS_HOST=localhost
+      - REDIS_PORT=6379
     ports:
       - "6379:6379"
     healthcheck:
@@ -58,13 +46,15 @@ services:
     ports:
       - "9092:9092"
     environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_LISTENERS: INTERNAL://kafka-lp:29092, EXTERNAL://:9092
-      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka-lp:29092, EXTERNAL://localhost:9092
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper-lp:2181
-      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT, EXTERNAL:PLAINTEXT
+      - KAFKA_BROKER_ID=1
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+      - KAFKA_LISTENERS=INTERNAL://kafka-lp:29092, EXTERNAL://:9092
+      - KAFKA_ADVERTISED_LISTENERS=INTERNAL://kafka-lp:29092, EXTERNAL://localhost:9092
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper-lp:2181
+      - KAFKA_INTER_BROKER_LISTENER_NAME=INTERNAL
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=INTERNAL:PLAINTEXT, EXTERNAL:PLAINTEXT
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=http://localhost:9092
+      - SPRING_KAFKA_PROPERTIES_SCHEMA_REGISTRY_URL=http://localhost:8081
     depends_on:
       - zookeeper-lp
     volumes:
