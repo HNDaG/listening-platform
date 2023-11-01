@@ -14,7 +14,7 @@ jobs:
 
     steps:
       - name: Starting services with docker-compose
-        run: docker-compose -f docker-compose-local.yaml up -d
+        run: docker-compose -f "docker-compose-local.yaml" up -d
 
       - name: Setup JDK
         uses: actions/setup-java@v3
