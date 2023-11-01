@@ -37,4 +37,3 @@ class KafkaProducerConfig(
         return baseProperties
     }
 }
-

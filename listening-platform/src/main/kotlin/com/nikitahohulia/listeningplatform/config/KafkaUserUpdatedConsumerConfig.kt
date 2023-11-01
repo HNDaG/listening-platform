@@ -39,4 +39,3 @@ class KafkaUserUpdatedConsumerConfig (
         return ReactiveKafkaConsumerTemplate(receiverOptions)
     }
 }
-
