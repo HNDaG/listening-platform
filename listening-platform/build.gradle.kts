@@ -15,19 +15,23 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb-reactive:3.1.3")
     implementation("org.springframework.boot:spring-boot-starter-data-redis-reactive:3.1.2")
+    implementation("org.springframework.kafka:spring-kafka:3.0.12")
 
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("io.nats:jnats:2.16.14")
-    implementation("com.google.protobuf:protobuf-java:3.24.3")
-    implementation("com.willowtreeapps.assertk:assertk:0.27.0")
+    implementation("io.projectreactor.kafka:reactor-kafka:1.3.21")
+    implementation("org.apache.kafka:kafka-clients:3.6.0")
+    implementation("io.confluent:kafka-protobuf-serializer:7.5.1")
+
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.2.2")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("com.google.protobuf:protobuf-java:3.24.3")
     implementation("io.projectreactor:reactor-core:3.5.10")
+    implementation("org.jetbrains.kotlin:kotlin-reflect")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("com.willowtreeapps.assertk:assertk-jvm:0.27.0")
+    implementation("com.willowtreeapps.assertk:assertk:0.27.0")
     implementation("net.datafaker:datafaker:2.0.1")
-
 
 }
 
