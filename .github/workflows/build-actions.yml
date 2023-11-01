@@ -13,9 +13,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Grant execute permission for docker-compose-local.yaml
-        run: chmod +x docker-compose-local.yaml
-
       - name: Starting services with docker-compose
         run: docker-compose -f docker-compose-local.yaml up -d
 
