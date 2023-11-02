@@ -1,11 +1,11 @@
 plugins {
-    id("org.springframework.boot")
-    id("io.spring.dependency-management")
-    id("io.gitlab.arturbosch.detekt")
+    id("org.springframework.boot") version "3.1.3"
+    id("io.spring.dependency-management") version "1.1.3"
+    id("io.gitlab.arturbosch.detekt") version "1.23.1"
     kotlin("plugin.noarg") version "1.9.0"
     kotlin("jvm")
-    kotlin("plugin.spring")
-    kotlin("plugin.allopen")
+    kotlin("plugin.spring") version "1.9.0"
+    kotlin("plugin.allopen") version "1.9.0"
 }
 
 dependencies {
@@ -24,9 +24,9 @@ dependencies {
 
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.2.2")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-    implementation("com.google.protobuf:protobuf-java:3.24.3")
-    implementation("io.projectreactor:reactor-core:3.5.10")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+
+    implementation("net.devh:grpc-spring-boot-starter:2.15.0.RELEASE")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("com.willowtreeapps.assertk:assertk-jvm:0.27.0")

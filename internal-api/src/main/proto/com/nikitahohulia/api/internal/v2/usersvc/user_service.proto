@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package com.nikitahohulia.api.internal.v2.usersvc.user_service.proto;
+
+option java_multiple_files = true;
+
+import "com/nikitahohulia/api/internal/v2/usersvc/input/reqreply/user/get_by_username.proto";
+import "com/nikitahohulia/api/internal/v2/usersvc/input/reqreply/user/get_all.proto";
+import "com/nikitahohulia/api/internal/v2/usersvc/input/reqreply/user/update.proto";
+
+service UserService {
+
+  rpc getAll(input.reqreply.get_all.proto.GetAllUsersRequest)
+      returns (input.reqreply.get_all.proto.GetAllUsersResponse);
+
+  rpc getByUsername(input.reqreply.get_by_username.proto.GetUserByUsernameRequest)
+      returns (input.reqreply.get_by_username.proto.GetUserByUsernameResponse);
+
+  rpc updateUser(input.reqreply.update.proto.UpdateUserRequest)
+      returns (input.reqreply.update.proto.UpdateUserResponse);
+}
