@@ -19,6 +19,8 @@ jobs:
       - name: Start MongoDB container
         run: |
           docker run -d --name localmongo -p 27017:27017 \
+            -e MONGO_INITDB_ROOT_USERNAME=root \
+            -e MONGO_INITDB_ROOT_PASSWORD=secret \
             mongo:latest
       - name: Start NATS container
         run: docker run -d --name nats-server -p 4222:4222 nats:latest

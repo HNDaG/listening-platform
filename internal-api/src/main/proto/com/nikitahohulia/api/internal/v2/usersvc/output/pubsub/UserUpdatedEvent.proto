@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package com.nikitahohulia.api.internal.v2.usersvc.output.pubsub.update.proto;
+
+option java_multiple_files = true;
+
+import "com/nikitahohulia/api/internal/v2/usersvc/commonmodels/user/user.proto";
+
+message UserUpdatedEvent {
+  commonmodels.user.User user = 1;
+}

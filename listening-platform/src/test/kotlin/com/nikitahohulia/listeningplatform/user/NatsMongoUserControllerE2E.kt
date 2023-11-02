@@ -131,7 +131,7 @@ class NatsMongoUserControllerE2E {
         val response = natsConnection.requestWithTimeout(
             subject,
             payload.toByteArray(),
-            Duration.ofSeconds(200L)
+            Duration.ofSeconds(2L)
         )
         return parser.parseFrom(response.get().data)
     }
