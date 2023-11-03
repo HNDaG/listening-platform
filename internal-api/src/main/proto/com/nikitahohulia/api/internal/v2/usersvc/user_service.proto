@@ -13,9 +13,9 @@ service UserService {
   rpc getAll(input.reqreply.get_all.proto.GetAllUsersRequest)
       returns (input.reqreply.get_all.proto.GetAllUsersResponse);
 
-  rpc getByUsername(input.reqreply.get_by_username.proto.GetUserByUsernameRequest)
-      returns (input.reqreply.get_by_username.proto.GetUserByUsernameResponse);
-
   rpc updateUser(input.reqreply.update.proto.UpdateUserRequest)
       returns (input.reqreply.update.proto.UpdateUserResponse);
+
+  rpc getByUsername(input.reqreply.get_by_username.proto.GetUserByUsernameRequest)
+      returns (stream input.reqreply.get_by_username.proto.GetUserByUsernameResponse);
 }

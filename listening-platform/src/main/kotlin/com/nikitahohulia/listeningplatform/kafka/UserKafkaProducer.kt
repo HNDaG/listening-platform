@@ -1,6 +1,6 @@
 package com.nikitahohulia.listeningplatform.kafka
 
-import com.nikitahohulia.api.internal.v2.usersvc.KafkaTopic
+import com.nikitahohulia.api.internal.v2.usersvc.UserEvent
 import com.nikitahohulia.api.internal.v2.usersvc.commonmodels.user.User
 import com.nikitahohulia.api.internal.v2.usersvc.output.pubsub.update.proto.UserUpdatedEvent
 import org.apache.kafka.clients.producer.ProducerRecord
@@ -10,7 +10,7 @@ import reactor.kafka.sender.SenderRecord
 import reactor.kotlin.core.publisher.toMono
 
 @Component
-class KafkaProducer (
+class UserKafkaProducer (
     private val kafkaSenderUpdatedUserEvent: KafkaSender<String, UserUpdatedEvent>
 ) {
 
@@ -18,9 +18,10 @@ class KafkaProducer (
         val userUpdatedEvent = UserUpdatedEvent.newBuilder().apply {
             user = userProto
         }.build()
+
         val senderRecord = SenderRecord.create(
             ProducerRecord(
-                KafkaTopic.User.UPDATE,
+                UserEvent.createUserEventKafkaTopic(UserEvent.UPDATED),
                 userProto.id,
                 userUpdatedEvent
             ),

@@ -1,7 +1,7 @@
 package com.nikitahohulia.listeningplatform.dto.response
 
 import com.nikitahohulia.listeningplatform.entity.User
-import com.nikitahohulia.api.internal.v2.usersvc.commonmodels.user.User as NatsUser
+import com.nikitahohulia.api.internal.v2.usersvc.commonmodels.user.User as ProtoUser
 
 data class UserDtoResponse(
     val id: String,
@@ -21,8 +21,8 @@ fun User.toResponse() = UserDtoResponse(
     publisherId = publisherId?.toHexString() ?: ""
 )
 
-fun UserDtoResponse.toProto(): NatsUser {
-    val builder = NatsUser.newBuilder()
+fun UserDtoResponse.toProto(): ProtoUser {
+    val builder = ProtoUser.newBuilder()
         .setId(id)
         .setEmail(email)
         .setPassword(password)
@@ -34,8 +34,8 @@ fun UserDtoResponse.toProto(): NatsUser {
     return builder.build()
 }
 
-fun User.toProto(): NatsUser {
-    val builder = NatsUser.newBuilder()
+fun User.toProto(): ProtoUser {
+    val builder = ProtoUser.newBuilder()
         .setEmail(email)
         .setPassword(password)
         .setUsername(username)
