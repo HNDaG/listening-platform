@@ -32,7 +32,6 @@ dependencies {
     testImplementation("com.willowtreeapps.assertk:assertk-jvm:0.27.0")
     implementation("com.willowtreeapps.assertk:assertk:0.27.0")
     implementation("net.datafaker:datafaker:2.0.1")
-
 }
 
 noArg {
