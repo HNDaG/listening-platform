@@ -1,13 +1,12 @@
 package com.nikitahohulia.listeningplatform.service
 
 import com.nikitahohulia.listeningplatform.dto.response.toProto
-import com.nikitahohulia.listeningplatform.dto.response.toResponse
 import com.nikitahohulia.listeningplatform.entity.Post
 import com.nikitahohulia.listeningplatform.entity.Publisher
 import com.nikitahohulia.listeningplatform.entity.User
 import com.nikitahohulia.listeningplatform.exception.DuplicateException
 import com.nikitahohulia.listeningplatform.exception.NotFoundException
-import com.nikitahohulia.listeningplatform.kafka.KafkaProducer
+import com.nikitahohulia.listeningplatform.kafka.UserKafkaProducer
 import com.nikitahohulia.listeningplatform.repository.PostRepository
 import com.nikitahohulia.listeningplatform.repository.PublisherRepository
 import com.nikitahohulia.listeningplatform.repository.UserRepository
@@ -25,7 +24,7 @@ class UserServiceImpl(
     @Qualifier("cacheableUserRepository") private val userRepository: UserRepository,
     private val publisherRepository: PublisherRepository,
     private val postRepository: PostRepository,
-    private val kafkaUserProducer: KafkaProducer
+    private val kafkaUserProducer: UserKafkaProducer
 ) : UserService {
 
     override fun getUserByUsername(username: String): Mono<User> {
@@ -59,18 +58,17 @@ class UserServiceImpl(
                     .flatMap { (user, newPublisher) ->
                         val userAsPublisher = user.copy(publisherId = newPublisher.id)
                         userRepository.save(userAsPublisher)
-                            .doOnNext { kafkaUserProducer.sendUserUpdatedEventToKafka(it.toResponse().toProto()) }
+                            .doOnNext { kafkaUserProducer.sendUserUpdatedEventToKafka(it.toProto()) }
                             .thenReturn(newPublisher)
                     }
             }
     }
 
-
     override fun updateUser(oldUsername: String, user: User): Mono<User> {
         return userRepository.findByUsername(oldUsername)
             .switchIfEmpty { NotFoundException("User not found with username = $oldUsername").toMono() }
             .flatMap { userRepository.save(user.copy(id = it.id)) }
-            .doOnNext { kafkaUserProducer.sendUserUpdatedEventToKafka(it.toResponse().toProto()) }
+            .doOnNext { kafkaUserProducer.sendUserUpdatedEventToKafka(it.toProto()) }
             .flatMap { userRepository.findByUsername(it.username) }
     }
 
@@ -95,7 +93,7 @@ class UserServiceImpl(
                 user.subscriptions.add(publisher.id!!)
                 userRepository.save(user)
             }
-            .doOnNext { kafkaUserProducer.sendUserUpdatedEventToKafka(it.toResponse().toProto()) }
+            .doOnNext { kafkaUserProducer.sendUserUpdatedEventToKafka(it.toProto()) }
             .thenReturn(Unit)
     }
 

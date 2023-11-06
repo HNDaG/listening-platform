@@ -1,10 +1,12 @@
 package com.nikitahohulia.listeningplatform.service
 
+import com.nikitahohulia.listeningplatform.dto.response.toProto
 import com.nikitahohulia.listeningplatform.entity.Post
 import com.nikitahohulia.listeningplatform.entity.Publisher
 import reactor.kotlin.core.publisher.switchIfEmpty
 import com.nikitahohulia.listeningplatform.exception.DuplicateException
 import com.nikitahohulia.listeningplatform.exception.NotFoundException
+import com.nikitahohulia.listeningplatform.kafka.UserKafkaProducer
 import com.nikitahohulia.listeningplatform.repository.PostRepository
 import com.nikitahohulia.listeningplatform.repository.UserRepository
 import com.nikitahohulia.listeningplatform.repository.PublisherRepository
@@ -20,7 +22,8 @@ class PublisherServiceImpl(
     private val publisherRepository: PublisherRepository,
     private val postRepository: PostRepository,
     @Qualifier("cacheableUserRepository") private val userRepository: UserRepository,
-    private val redisUserRepository: UserRedisRepository
+    private val redisUserRepository: UserRedisRepository,
+    private val kafkaUserProducer: UserKafkaProducer
 ) : PublisherService {
 
     override fun getPublisherByUsername(username: String): Mono<Publisher> {
@@ -56,6 +59,7 @@ class PublisherServiceImpl(
             .flatMap { user ->
                 userRepository.save(user.copy(publisherId = null))
                     .then(redisUserRepository.update(user.copy(publisherId = null)))
+                    .doOnNext { kafkaUserProducer.sendUserUpdatedEventToKafka(it.toProto()) }
             }
             .then(publisherRepository.deleteByPublisherName(publisherName)
                     .handle { deletedCount, sync ->

@@ -25,8 +25,9 @@ class KafkaProducerConfig(
             KafkaSender<String, T> =
         KafkaSender.create(SenderOptions.create(properties))
 
-    private fun producerProperties(customProperties: MutableMap<String, Any> = mutableMapOf()):
-            MutableMap<String, Any> {
+    private fun producerProperties(
+        customProperties: MutableMap<String, Any> = mutableMapOf()
+    ): MutableMap<String, Any> {
         val baseProperties: MutableMap<String, Any> = mutableMapOf(
             ProducerConfig.BOOTSTRAP_SERVERS_CONFIG to bootstrapServers,
             ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java,

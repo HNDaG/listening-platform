@@ -43,7 +43,6 @@ class GetAllUsersNatsController(
 
     private fun buildFailureResponse(exception: String, message: String): GetAllUsersResponse =
         GetAllUsersResponse.newBuilder().apply {
-            failureBuilder
-                .setMessage("GetAllUsers failed by $exception: $message")
+            failureBuilder.message = "GetAllUsers failed by $exception: $message"
         }.build()
 }

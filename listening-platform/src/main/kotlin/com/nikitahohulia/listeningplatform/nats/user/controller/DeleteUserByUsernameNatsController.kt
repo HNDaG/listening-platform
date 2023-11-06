@@ -40,7 +40,6 @@ class DeleteUserByUsernameNatsController(
 
     private fun buildFailureResponse(exception: String, message: String): DeleteUserByUsernameResponse =
         DeleteUserByUsernameResponse.newBuilder().apply {
-            failureBuilder
-                .setMessage("User deleteByUsername failed by $exception: $message")
+            failureBuilder.message = "User deleteByUsername failed by $exception: $message"
         }.build()
 }

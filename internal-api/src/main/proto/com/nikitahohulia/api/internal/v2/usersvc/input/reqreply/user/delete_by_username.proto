@@ -4,8 +4,6 @@ package com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.delete_by_usern
 
 option java_multiple_files = true;
 
-import "com/nikitahohulia/api/internal/v2/usersvc/commonmodels/user/user.proto";
-
 message DeleteUserByUsernameRequest {
   string username = 1;
 }
@@ -16,9 +14,7 @@ message DeleteUserByUsernameResponse {
     Failure failure = 2;
   }
 
-  message Success {
-
-  }
+  message Success {}
 
   message Failure {
     string message = 1;

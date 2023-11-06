@@ -1,7 +1,7 @@
 package com.nikitahohulia.listeningplatform.dto.request
 
 import com.nikitahohulia.listeningplatform.entity.User
-import com.nikitahohulia.api.internal.v2.usersvc.commonmodels.user.User as NatsUser
+import com.nikitahohulia.api.internal.v2.usersvc.commonmodels.user.User as ProtoUser
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotEmpty
 import jakarta.validation.constraints.Pattern
@@ -21,23 +21,20 @@ data class UserDtoRequest(
                 " and be at least 8 characters long."
     )
     val password: String,
+    val subscriptions: MutableSet<ObjectId> = mutableSetOf(),
+    val publisherId: ObjectId? = null
 )
 
 fun UserDtoRequest.toEntity() = User(
     id = id?.let { ObjectId(it) },
     username = username,
     email = email,
-    password = password
-)
-
-fun NatsUser.toRequest() = UserDtoRequest(
-    id = id.takeIf { hasId() },
-    username = username,
-    email = email,
     password = password,
+    subscriptions = subscriptions,
+    publisherId = publisherId
 )
 
-fun NatsUser.toEntity(): User {
+fun ProtoUser.toEntity(): User {
     return User(
         id = if (hasId()) ObjectId(id) else null,
         email = email,

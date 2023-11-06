@@ -37,13 +37,11 @@ class GetUserByUsernameNatsController(
 
     private fun buildSuccessResponse(user: User): GetUserByUsernameResponse =
         GetUserByUsernameResponse.newBuilder().apply {
-            successBuilder
-                .setUser(user)
+            successBuilder.user = user
         }.build()
 
     private fun buildFailureResponse(exception: String, message: String): GetUserByUsernameResponse =
         GetUserByUsernameResponse.newBuilder().apply {
-            failureBuilder
-                .setMessage("GetUserByUsername failed by $exception: $message")
+            failureBuilder.message = "GetUserByUsername failed by $exception: $message"
         }.build()
 }

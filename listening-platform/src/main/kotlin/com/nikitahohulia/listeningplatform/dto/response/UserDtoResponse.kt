@@ -1,7 +1,7 @@
 package com.nikitahohulia.listeningplatform.dto.response
 
 import com.nikitahohulia.listeningplatform.entity.User
-import com.nikitahohulia.api.internal.v2.usersvc.commonmodels.user.User as NatsUser
+import com.nikitahohulia.api.internal.v2.usersvc.commonmodels.user.User as ProtoUser
 
 data class UserDtoResponse(
     val id: String,
@@ -21,8 +21,8 @@ fun User.toResponse() = UserDtoResponse(
     publisherId = publisherId?.toHexString() ?: ""
 )
 
-fun UserDtoResponse.toProto(): NatsUser {
-    val builder = NatsUser.newBuilder()
+fun UserDtoResponse.toProto(): ProtoUser {
+    val builder = ProtoUser.newBuilder()
         .setId(id)
         .setEmail(email)
         .setPassword(password)
@@ -34,14 +34,17 @@ fun UserDtoResponse.toProto(): NatsUser {
     return builder.build()
 }
 
-fun User.toProto(): NatsUser {
-    val builder = NatsUser.newBuilder()
-        .setEmail(email)
-        .setPassword(password)
-        .setUsername(username)
+fun User.toProto(): ProtoUser {
+    return ProtoUser.newBuilder().also{ protoUser ->
+        id?.let { protoUser.id = it.toHexString() }
+        publisherId?.let { protoUser.publisherId = publisherId.toHexString() }
 
-    if (id!=null) builder.setId(id.toHexString())
-    if (publisherId!=null) builder.setPublisherId(publisherId.toHexString())
-    subscriptions.forEach { builder.addSubscriptions(it.toHexString()) }
-    return builder.build()
+        protoUser.email = email
+        protoUser.password = password
+        protoUser.username = username
+
+        protoUser.addAllSubscriptions(
+            subscriptions.map { it.toHexString() }
+        )
+    }.build()
 }
