@@ -8,7 +8,6 @@ object UserEvent {
 
     const val UPDATED = "updated"
 
-
     fun createUserEventKafkaTopic(eventType: String): String =
         "$PREFIX.$SUBDOMAIN.$eventType"
 
