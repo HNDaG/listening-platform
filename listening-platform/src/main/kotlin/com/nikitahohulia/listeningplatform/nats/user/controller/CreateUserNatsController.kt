@@ -39,13 +39,11 @@ class CreateUserNatsController(
 
     private fun buildSuccessResponse(user: User): CreateUserResponse =
         CreateUserResponse.newBuilder().apply {
-            successBuilder
-                .setUser(user)
+            successBuilder.user = user
         }.build()
 
     private fun buildFailureResponse(exception: String, message: String): CreateUserResponse =
         CreateUserResponse.newBuilder().apply {
-            failureBuilder
-                .setMessage("CreateUser failed by $exception: $message")
+            failureBuilder.message = "CreateUser failed by $exception: $message"
         }.build()
 }

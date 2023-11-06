@@ -35,13 +35,16 @@ fun UserDtoResponse.toProto(): ProtoUser {
 }
 
 fun User.toProto(): ProtoUser {
-    val builder = ProtoUser.newBuilder()
-        .setEmail(email)
-        .setPassword(password)
-        .setUsername(username)
+    return ProtoUser.newBuilder().also{ protoUser ->
+        id?.let { protoUser.id = it.toHexString() }
+        publisherId?.let { protoUser.publisherId = publisherId.toHexString() }
 
-    if (id!=null) builder.setId(id.toHexString())
-    if (publisherId!=null) builder.setPublisherId(publisherId.toHexString())
-    subscriptions.forEach { builder.addSubscriptions(it.toHexString()) }
-    return builder.build()
+        protoUser.email = email
+        protoUser.password = password
+        protoUser.username = username
+
+        protoUser.addAllSubscriptions(
+            subscriptions.map { it.toHexString() }
+        )
+    }.build()
 }

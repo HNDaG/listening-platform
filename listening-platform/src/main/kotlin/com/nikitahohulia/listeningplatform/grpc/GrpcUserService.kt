@@ -42,7 +42,7 @@ class GrpcUserService(
         return handleUpdateUser(request.oldUsername, request.user.toEntity())
     }
 
-    fun handleUpdateUser(oldUsername: String, user: User): Mono<UpdateUserResponse> {
+    private fun handleUpdateUser(oldUsername: String, user: User): Mono<UpdateUserResponse> {
         return userService.updateUser(oldUsername, user)
             .map { buildSuccessResponseUserUpdated(it.toProto()) }
             .onErrorResume { ex ->
@@ -53,7 +53,7 @@ class GrpcUserService(
             }
     }
 
-    fun handleGetAll(): Mono<GetAllUsersResponse> {
+    private fun handleGetAll(): Mono<GetAllUsersResponse> {
         return userService.getAllUsers()
             .collectList()
             .map { devices -> buildSuccessResponseGetAll(devices.map { it.toProto() }) }
@@ -65,7 +65,7 @@ class GrpcUserService(
             }
     }
 
-    fun handleGetByUsername(username: String): Flux<GetUserByUsernameResponse> {
+    private fun handleGetByUsername(username: String): Flux<GetUserByUsernameResponse> {
         return userService.getUserByUsername(username)
             .flatMapMany { user ->
                 userUpdatedEventService.subscribeToEvents(user.id!!.toHexString(), UserEvent.UPDATED)

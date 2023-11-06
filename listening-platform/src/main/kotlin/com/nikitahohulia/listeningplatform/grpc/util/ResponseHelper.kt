@@ -9,15 +9,13 @@ object ResponseHelper {
 
     fun buildSuccessResponseGetByUsername(user: User): GetUserByUsernameResponse {
         return GetUserByUsernameResponse.newBuilder().apply {
-            successBuilder
-                .setUser(user)
+            successBuilder.user = user
         }.build()
     }
 
      fun buildFailureResponseGetByUsername(exception: String, message: String?): GetUserByUsernameResponse {
         return GetUserByUsernameResponse.newBuilder().apply {
-            failureBuilder
-                .setMessage("GetAllUsers failed by $exception: $message")
+            failureBuilder.message = "GetUserByUsername failed by $exception: $message"
         }.build()
     }
 
@@ -31,22 +29,19 @@ object ResponseHelper {
 
     fun buildFailureResponseGetAll(exception: String, message: String?): GetAllUsersResponse {
         return GetAllUsersResponse.newBuilder().apply {
-            failureBuilder
-                .setMessage("GetAllUsers failed by $exception: $message")
+            failureBuilder.message = "GetAllUsers failed by $exception: $message"
         }.build()
     }
 
     fun buildSuccessResponseUserUpdated(user: User): UpdateUserResponse {
         return UpdateUserResponse.newBuilder().apply {
-            successBuilder
-                .setUser(user)
+            successBuilder.user = user
         }.build()
     }
 
     fun buildFailureResponseUserUpdated(exception: String, message: String?): UpdateUserResponse {
         return UpdateUserResponse.newBuilder().apply {
-            failureBuilder
-                .setMessage("UpdateUser failed by $exception: $message")
+            failureBuilder.message = "UpdateUser failed by $exception: $message"
         }.build()
     }
 }

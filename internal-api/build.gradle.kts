@@ -13,12 +13,10 @@ protobuf {
 		id("grpc") {
 			artifact = "io.grpc:protoc-gen-grpc-java:1.58.0"
 		}
-
 		id("reactor-grpc") {
 			artifact = "com.salesforce.servicelibs:reactor-grpc:1.2.4"
 		}
 	}
-
 	generateProtoTasks {
 		all().forEach {
 			it.plugins {

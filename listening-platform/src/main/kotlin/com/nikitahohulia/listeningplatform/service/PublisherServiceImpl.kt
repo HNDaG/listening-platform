@@ -58,8 +58,8 @@ class PublisherServiceImpl(
             .flatMap { publisher -> publisher.id?.let { userRepository.findByPublisherId(it) } ?: Mono.empty() }
             .flatMap { user ->
                 userRepository.save(user.copy(publisherId = null))
-                    .then(redisUserRepository.update(user.copy(publisherId = null))
-                        .doOnNext { kafkaUserProducer.sendUserUpdatedEventToKafka(it.toProto()) })
+                    .then(redisUserRepository.update(user.copy(publisherId = null)))
+                    .doOnNext { kafkaUserProducer.sendUserUpdatedEventToKafka(it.toProto()) }
             }
             .then(publisherRepository.deleteByPublisherName(publisherName)
                     .handle { deletedCount, sync ->

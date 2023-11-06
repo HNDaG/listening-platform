@@ -21,8 +21,7 @@ class UserUpdatedNatsEventService(
     override fun subscribeToEvents(userId: String, eventType: String): Flux<UserUpdatedEvent> {
         return Flux.create { sink ->
             dispatcher.apply {
-                subscribe(createUserEventNatsSubject(userId, eventType))
-                { message ->
+                subscribe(createUserEventNatsSubject(userId, eventType)) { message ->
                     val parsedData = parser.parseFrom(message.data)
                     sink.next(parsedData)
                 }
