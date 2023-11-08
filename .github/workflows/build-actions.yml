@@ -29,15 +29,12 @@ jobs:
       - name: Compile and run checks
         run: ./gradlew assemble
 
-      - name: Start containers
+      - name: Start Docker compose
         run: docker compose -f docker-compose.yaml up --build --force-recreate -d app
 
       - name: Run tests
         run: ./gradlew test
 
-      - name: Stop Docker Container
-        run: docker compose down
-
-      - name : Shutdown
+      - name: Stop Docker compose
         if: always()
         run: docker compose down
