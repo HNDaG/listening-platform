@@ -32,6 +32,9 @@ jobs:
       - name: Start Docker compose
         run: docker compose -f docker-compose.yaml up --build --force-recreate -d app
 
+      - name: Stop Docker Container
+        run: docker stop listening-platform-app-1
+
       - name: Run tests
         run: ./gradlew test
 
