@@ -5,15 +5,16 @@ import com.nikitahohulia.api.internal.v2.usersvc.UserEvent.UPDATED
 import com.nikitahohulia.api.internal.v2.usersvc.UserEvent.createUserEventNatsSubject
 import com.nikitahohulia.api.internal.v2.usersvc.commonmodels.user.User
 import com.nikitahohulia.api.internal.v2.usersvc.output.pubsub.update.proto.UserUpdatedEvent
-import com.nikitahohulia.listeningplatform.user.application.port.UserUpdatedEventService
+import com.nikitahohulia.listeningplatform.user.application.port.UserUpdatedEventProducerOutPort
+import com.nikitahohulia.listeningplatform.user.application.port.UserUpdatedEventSubscriberOutPort
 import io.nats.client.Connection
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 
 @Service
-class UserUpdatedNatsEventService(
+class UserUpdatedNatsEventServiceOutPort(
     private val connection: Connection
-) : UserUpdatedEventService<UserUpdatedEvent> {
+) : UserUpdatedEventSubscriberOutPort<UserUpdatedEvent>, UserUpdatedEventProducerOutPort {
 
     override val parser: Parser<UserUpdatedEvent> = UserUpdatedEvent.parser()
 
@@ -30,10 +31,10 @@ class UserUpdatedNatsEventService(
         }
     }
 
-    override fun publishEvent(updatedUser: User) {
-        val updateEventSubject = createUserEventNatsSubject(updatedUser.id, UPDATED)
+    override fun publishEvent(userProto: User) {
+        val updateEventSubject = createUserEventNatsSubject(userProto.id, UPDATED)
         val eventMessage = UserUpdatedEvent.newBuilder()
-            .setUser(updatedUser)
+            .setUser(userProto)
             .build()
 
         connection.publish(updateEventSubject, eventMessage.toByteArray())

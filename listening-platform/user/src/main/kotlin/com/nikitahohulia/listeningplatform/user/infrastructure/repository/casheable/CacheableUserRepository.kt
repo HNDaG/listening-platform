@@ -1,8 +1,8 @@
 package com.nikitahohulia.listeningplatform.user.infrastructure.repository.casheable
 
-import com.nikitahohulia.listeningplatform.user.application.port.UserRepository
+import com.nikitahohulia.listeningplatform.user.application.port.UserRepositoryOutPort
 import com.nikitahohulia.listeningplatform.user.domain.User
-import com.nikitahohulia.listeningplatform.user.infrastructure.repository.redis.UserRedisRepository
+import com.nikitahohulia.listeningplatform.user.infrastructure.repository.redis.UserRedisRepositoryPort
 import org.bson.types.ObjectId
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Repository
@@ -11,9 +11,9 @@ import reactor.core.publisher.Mono
 
 @Repository
 class CacheableUserRepository (
-    @Qualifier("mongoUserRepository") private val userRepository: UserRepository,
-    private val redisUserRepository: UserRedisRepository
-) : UserRepository {
+    @Qualifier("mongoUserRepository") private val userRepository: UserRepositoryOutPort,
+    private val redisUserRepository: UserRedisRepositoryPort
+) : UserRepositoryOutPort {
 
     override fun findAll(): Flux<User> {
         return userRepository.findAll()

@@ -7,7 +7,7 @@ import com.nikitahohulia.listeningplatform.user.domain.User
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
-interface UserService {
+interface UserServiceInPort {
 
     fun createUser(user: User): Mono<User>
 

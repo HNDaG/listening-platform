@@ -3,6 +3,7 @@ package com.nikitahohulia.listeningplatform.user.infrastructure.adapter.kafka.pr
 import com.nikitahohulia.api.internal.v2.usersvc.UserEvent
 import com.nikitahohulia.api.internal.v2.usersvc.commonmodels.user.User
 import com.nikitahohulia.api.internal.v2.usersvc.output.pubsub.update.proto.UserUpdatedEvent
+import com.nikitahohulia.listeningplatform.user.application.port.UserUpdatedEventProducerOutPort
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.springframework.stereotype.Component
 import reactor.kafka.sender.KafkaSender
@@ -12,9 +13,9 @@ import reactor.kotlin.core.publisher.toMono
 @Component
 class UserKafkaProducer (
     private val kafkaSenderUpdatedUserEvent: KafkaSender<String, UserUpdatedEvent>
-) {
+): UserUpdatedEventProducerOutPort {
 
-    fun sendUserUpdatedEventToKafka(userProto: User) {
+    override fun publishEvent(userProto: User) {
         val userUpdatedEvent = UserUpdatedEvent.newBuilder().apply {
             user = userProto
         }.build()

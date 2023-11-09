@@ -8,7 +8,7 @@ import com.nikitahohulia.api.internal.v2.usersvc.commonmodels.user.User
 import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.create.proto.CreateUserRequest
 import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.create.proto.CreateUserResponse
 import com.nikitahohulia.listeningplatform.core.infrastructure.adapter.nats.NatsController
-import com.nikitahohulia.listeningplatform.user.application.port.UserService
+import com.nikitahohulia.listeningplatform.user.application.port.UserServiceInPort
 import com.nikitahohulia.listeningplatform.user.infrastructure.mapper.toEntity
 import com.nikitahohulia.listeningplatform.user.infrastructure.mapper.toProto
 import reactor.core.publisher.Mono
@@ -17,7 +17,7 @@ import reactor.kotlin.core.publisher.toMono
 @Component
 class CreateUserNatsController(
     override val connection: Connection,
-    private val userService: UserService
+    private val userService: UserServiceInPort
 ) : NatsController<CreateUserRequest, CreateUserResponse> {
 
     override val subject = CREATE

@@ -7,7 +7,7 @@ import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.update.proto.Upd
 import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.update.proto.UpdateUserResponse
 import com.nikitahohulia.listeningplatform.core.application.exception.NotFoundException
 import com.nikitahohulia.listeningplatform.core.infrastructure.adapter.nats.NatsController
-import com.nikitahohulia.listeningplatform.user.application.port.UserService
+import com.nikitahohulia.listeningplatform.user.application.port.UserServiceInPort
 import com.nikitahohulia.listeningplatform.user.infrastructure.mapper.toEntity
 import com.nikitahohulia.listeningplatform.user.infrastructure.mapper.toProto
 import io.nats.client.Connection
@@ -18,7 +18,7 @@ import reactor.kotlin.core.publisher.toMono
 @Component
 class UpdateUserNatsController(
     override val connection: Connection,
-    private val userService: UserService
+    private val userService: UserServiceInPort
 ): NatsController<UpdateUserRequest, UpdateUserResponse> {
 
     override val subject = NatsSubject.User.UPDATE

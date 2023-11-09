@@ -3,14 +3,14 @@ package com.nikitahohulia.listeningplatform.user.application.service
 
 import com.nikitahohulia.listeningplatform.core.application.exception.DuplicateException
 import com.nikitahohulia.listeningplatform.core.application.exception.NotFoundException
-import com.nikitahohulia.listeningplatform.post.application.port.PostRepository
+import com.nikitahohulia.listeningplatform.post.application.port.PostRepositoryOutPort
 import com.nikitahohulia.listeningplatform.post.domain.Post
-import com.nikitahohulia.listeningplatform.publisher.application.port.PublisherRepository
+import com.nikitahohulia.listeningplatform.publisher.application.port.PublisherRepositoryOutPort
 import com.nikitahohulia.listeningplatform.publisher.domain.Publisher
-import com.nikitahohulia.listeningplatform.user.application.port.UserRepository
-import com.nikitahohulia.listeningplatform.user.application.port.UserService
+import com.nikitahohulia.listeningplatform.user.application.port.UserRepositoryOutPort
+import com.nikitahohulia.listeningplatform.user.application.port.UserServiceInPort
+import com.nikitahohulia.listeningplatform.user.application.port.UserUpdatedEventProducerOutPort
 import com.nikitahohulia.listeningplatform.user.domain.User
-import com.nikitahohulia.listeningplatform.user.infrastructure.adapter.kafka.producer.UserKafkaProducer
 import com.nikitahohulia.listeningplatform.user.infrastructure.mapper.toProto
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
@@ -22,12 +22,12 @@ import reactor.kotlin.core.util.function.component1
 import reactor.kotlin.core.util.function.component2
 
 @Service
-class UserServiceImpl(
-    @Qualifier("cacheableUserRepository") private val userRepository: UserRepository,
-    private val publisherRepository: PublisherRepository,
-    private val postRepository: PostRepository,
-    private val kafkaUserProducer: UserKafkaProducer
-) : UserService {
+class UserService(
+    @Qualifier("cacheableUserRepository") private val userRepository: UserRepositoryOutPort,
+    private val publisherRepositoryOutPort: PublisherRepositoryOutPort,
+    private val postRepositoryOutPort: PostRepositoryOutPort,
+    @Qualifier("userKafkaProducer") private val kafkaUserProducer: UserUpdatedEventProducerOutPort
+) : UserServiceInPort {
 
     override fun getUserByUsername(username: String): Mono<User> {
         return userRepository.findByUsername(username)
@@ -48,7 +48,7 @@ class UserServiceImpl(
         username: String, 
         publisher: Publisher
     ): Mono<Publisher> {
-        return publisherRepository.findByPublisherName(publisher.publisherName)
+        return publisherRepositoryOutPort.findByPublisherName(publisher.publisherName)
             .handle<Publisher> { _, sync ->
                 sync.error(DuplicateException("Publisher with the same PublisherName already exists"))
             }
@@ -56,24 +56,24 @@ class UserServiceImpl(
                 userRepository.findByUsername(username)
                     .filter { user -> user.publisherId == null }
                     .switchIfEmpty { DuplicateException("User is already a publisher").toMono() }
-                    .zipWhen { publisherRepository.save(publisher) }
+                    .zipWhen { publisherRepositoryOutPort.save(publisher) }
                     .flatMap { (user, newPublisher) ->
                         val userAsPublisher = user.copy(publisherId = newPublisher.id)
                         userRepository.save(userAsPublisher)
-                            .doOnNext { kafkaUserProducer.sendUserUpdatedEventToKafka(it.toProto()) }
+                            .doOnNext { kafkaUserProducer.publishEvent(it.toProto()) }
                             .thenReturn(newPublisher)
                     }
             }
     }
 
     override fun deleteUsersPublisher(username: String, publisherName: String): Mono<Unit> {
-        return publisherRepository.deleteByPublisherName(publisherName)
+        return publisherRepositoryOutPort.deleteByPublisherName(publisherName)
             .switchIfEmpty { NotFoundException("There is no publisher with publisherName = $publisherName").toMono() }
             .flatMap { userRepository.findByUsername(username) }
             .switchIfEmpty { NotFoundException("There is no user to delete publisher from").toMono() }
             .flatMap { user ->
                 userRepository.save(user.copy(publisherId = null))
-                    .doOnNext { kafkaUserProducer.sendUserUpdatedEventToKafka(it.toProto()) }
+                    .doOnNext { kafkaUserProducer.publishEvent(it.toProto()) }
             }
             .then(Mono.empty())
     }
@@ -82,7 +82,7 @@ class UserServiceImpl(
         return userRepository.findByUsername(oldUsername)
             .switchIfEmpty { NotFoundException("User not found with username = $oldUsername").toMono() }
             .flatMap { userRepository.save(user.copy(id = it.id)) }
-            .doOnNext { kafkaUserProducer.sendUserUpdatedEventToKafka(it.toProto()) }
+            .doOnNext { kafkaUserProducer.publishEvent(it.toProto()) }
             .flatMap { userRepository.findByUsername(it.username) }
     }
 
@@ -101,19 +101,19 @@ class UserServiceImpl(
 
     override fun subscribe(username: String, publisherName: String): Mono<Unit> {
         return userRepository.findByUsername(username)
-            .zipWhen { publisherRepository.findByPublisherName(publisherName) }
+            .zipWhen { publisherRepositoryOutPort.findByPublisherName(publisherName) }
             .switchIfEmpty { NotFoundException("Publisher not found with publisherName = $publisherName").toMono() }
             .flatMap { (user, publisher) ->
                 user.subscriptions.add(publisher.id!!)
                 userRepository.save(user)
             }
-            .doOnNext { kafkaUserProducer.sendUserUpdatedEventToKafka(it.toProto()) }
+            .doOnNext { kafkaUserProducer.publishEvent(it.toProto()) }
             .thenReturn(Unit)
     }
 
     override fun getPostsFromFollowedCreators(username: String, page: Int): Flux<Post> {
         val ids = userRepository.findPublisherIdsByUsername(username)
-        return postRepository.findAllBySubscriptionIds(ids, page, DEFAULT_PAGE_SIZE)
+        return postRepositoryOutPort.findAllBySubscriptionIds(ids, page, DEFAULT_PAGE_SIZE)
     }
 
     private companion object {

@@ -1,8 +1,9 @@
 package com.nikitahohulia.listeningplatform.user.infrastructure.adapter.kafka.consumer
 
 import com.nikitahohulia.api.internal.v2.usersvc.output.pubsub.update.proto.UserUpdatedEvent
-import com.nikitahohulia.listeningplatform.user.application.port.UserUpdatedEventService
+import com.nikitahohulia.listeningplatform.user.application.port.UserUpdatedEventProducerOutPort
 import jakarta.annotation.PostConstruct
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
 import reactor.core.scheduler.Schedulers
 import reactor.kafka.receiver.KafkaReceiver
@@ -10,7 +11,7 @@ import reactor.kafka.receiver.KafkaReceiver
 @Component
 class UserKafkaReceiver(
     private val kafkaReceiverUserUpdatedEvent: KafkaReceiver<String, UserUpdatedEvent>,
-    private val userUpdatedEventService: UserUpdatedEventService<UserUpdatedEvent>
+    @Qualifier("userUpdatedNatsEventServiceOutPort") private val userUpdatedEventSvc: UserUpdatedEventProducerOutPort
 ) {
 
     @PostConstruct
@@ -19,7 +20,7 @@ class UserKafkaReceiver(
             .flatMap { fluxRecord ->
                 fluxRecord
                     .map {
-                        userUpdatedEventService.publishEvent(it.value().user)
+                        userUpdatedEventSvc.publishEvent(it.value().user)
                     }
             }
             .subscribeOn(Schedulers.boundedElastic())

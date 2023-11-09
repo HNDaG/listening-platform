@@ -1,7 +1,7 @@
 package com.nikitahohulia.listeningplatform.user.infrastructure.repository.mongo
 
 import com.nikitahohulia.listeningplatform.core.application.exception.NotFoundException
-import com.nikitahohulia.listeningplatform.user.application.port.UserRepository
+import com.nikitahohulia.listeningplatform.user.application.port.UserRepositoryOutPort
 import com.nikitahohulia.listeningplatform.user.domain.User
 import com.nikitahohulia.listeningplatform.user.infrastructure.mapper.toEntity
 import com.nikitahohulia.listeningplatform.user.infrastructure.mapper.toMongo
@@ -18,7 +18,7 @@ import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
 @Repository
-class MongoUserRepository(private val mongoTemplate: ReactiveMongoTemplate) : UserRepository {
+class MongoUserRepository(private val mongoTemplate: ReactiveMongoTemplate) : UserRepositoryOutPort {
 
     override fun findAll(): Flux<User> {
         return mongoTemplate.findAll<MongoUser>().map { it.toEntity() }

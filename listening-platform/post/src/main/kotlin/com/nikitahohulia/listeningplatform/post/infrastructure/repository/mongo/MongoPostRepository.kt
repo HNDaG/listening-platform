@@ -1,6 +1,6 @@
 package com.nikitahohulia.listeningplatform.post.infrastructure.repository.mongo
 
-import com.nikitahohulia.listeningplatform.post.application.port.PostRepository
+import com.nikitahohulia.listeningplatform.post.application.port.PostRepositoryOutPort
 import com.nikitahohulia.listeningplatform.post.domain.Post
 import com.nikitahohulia.listeningplatform.post.infrastructure.mapper.toEntity
 import com.nikitahohulia.listeningplatform.post.infrastructure.mapper.toMongo
@@ -19,7 +19,7 @@ import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
 @Repository
-class MongoPostRepository(private val mongoTemplate: ReactiveMongoTemplate) : PostRepository {
+class MongoPostRepository(private val mongoTemplate: ReactiveMongoTemplate) : PostRepositoryOutPort {
 
     override fun findPostById(id: ObjectId): Mono<Post> {
         val query = Query().addCriteria(Criteria.where("id").`is`(id))

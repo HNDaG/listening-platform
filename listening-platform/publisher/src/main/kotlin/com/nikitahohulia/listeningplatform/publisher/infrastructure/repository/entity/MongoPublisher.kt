@@ -14,6 +14,6 @@ data class MongoPublisher(
     val rating: Double? = null,
 ){
     companion object {
-        const val COLLECTION_NAME = "com/nikitahohulia/listeningplatform/publisher"
+        const val COLLECTION_NAME = "publisher"
     }
 }

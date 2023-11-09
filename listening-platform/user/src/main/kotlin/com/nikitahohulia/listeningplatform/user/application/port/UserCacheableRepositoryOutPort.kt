@@ -3,7 +3,7 @@ package com.nikitahohulia.listeningplatform.user.application.port
 import com.nikitahohulia.listeningplatform.user.domain.User
 import reactor.core.publisher.Mono
 
-interface UserCrudRepository {
+interface UserCacheableRepositoryOutPort {
 
     fun findByUsername(username: String): Mono<User>
 

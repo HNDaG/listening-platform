@@ -1,10 +1,10 @@
-package com.nikitahohulia.listeningplatform.core.application.port
+package com.nikitahohulia.listeningplatform.user.application.port
 
 import com.google.protobuf.GeneratedMessageV3
 import com.google.protobuf.Parser
 import reactor.core.publisher.Flux
 
-interface EventSubscriber <EventT : GeneratedMessageV3> {
+interface UserUpdatedEventSubscriberOutPort <EventT : GeneratedMessageV3> {
 
     val parser: Parser<EventT>
 

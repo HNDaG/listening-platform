@@ -5,7 +5,7 @@ import org.bson.types.ObjectId
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
-interface UserRepository {
+interface UserRepositoryOutPort {
     fun findAll(): Flux<User>
 
     fun save(user: User): Mono<User>

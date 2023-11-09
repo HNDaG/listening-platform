@@ -5,7 +5,7 @@ import com.nikitahohulia.api.internal.v2.usersvc.NatsSubject
 import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.delete_by_username.proto.DeleteUserByUsernameRequest
 import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.delete_by_username.proto.DeleteUserByUsernameResponse
 import com.nikitahohulia.listeningplatform.core.infrastructure.adapter.nats.NatsController
-import com.nikitahohulia.listeningplatform.user.application.port.UserService
+import com.nikitahohulia.listeningplatform.user.application.port.UserServiceInPort
 import io.nats.client.Connection
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
@@ -14,7 +14,7 @@ import reactor.kotlin.core.publisher.toMono
 @Component
 class DeleteUserByUsernameNatsController(
     override val connection: Connection,
-    private val userService: UserService
+    private val userService: UserServiceInPort
 ) : NatsController<DeleteUserByUsernameRequest, DeleteUserByUsernameResponse> {
 
     override val subject = NatsSubject.User.DELETE_BY_USERNAME

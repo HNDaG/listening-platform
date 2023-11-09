@@ -6,7 +6,7 @@ import com.nikitahohulia.api.internal.v2.usersvc.commonmodels.user.User
 import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.get_all.proto.GetAllUsersRequest
 import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.get_all.proto.GetAllUsersResponse
 import com.nikitahohulia.listeningplatform.core.infrastructure.adapter.nats.NatsController
-import com.nikitahohulia.listeningplatform.user.application.port.UserService
+import com.nikitahohulia.listeningplatform.user.application.port.UserServiceInPort
 import com.nikitahohulia.listeningplatform.user.infrastructure.mapper.toProto
 import io.nats.client.Connection
 import org.springframework.stereotype.Component
@@ -16,7 +16,7 @@ import reactor.kotlin.core.publisher.toMono
 @Component
 class GetAllUsersNatsController(
     override val connection: Connection,
-    private val userService: UserService
+    private val userService: UserServiceInPort
 ): NatsController<GetAllUsersRequest, GetAllUsersResponse> {
 
     override val subject = NatsSubject.User.GET_ALL

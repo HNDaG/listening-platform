@@ -1,6 +1,6 @@
 package com.nikitahohulia.listeningplatform.user.infrastructure.repository.redis
 
-import com.nikitahohulia.listeningplatform.user.application.port.UserCrudRepository
+import com.nikitahohulia.listeningplatform.user.application.port.UserCacheableRepositoryOutPort
 import com.nikitahohulia.listeningplatform.user.domain.User
 import com.nikitahohulia.listeningplatform.user.infrastructure.mapper.toEntity
 import com.nikitahohulia.listeningplatform.user.infrastructure.mapper.toRedisUser
@@ -13,11 +13,11 @@ import reactor.kotlin.core.publisher.toMono
 import java.time.Duration
 
 @Repository
-class UserRedisRepository(
+class UserRedisRepositoryPort(
     @Value("\${redis.ttl.minutes}") val redisTtlMinutes: String,
     @Value("\${redis.key.user-username-prefix}") val prefix: String,
     private val redisTemplate: ReactiveRedisTemplate<String, RedisUser>,
-) : UserCrudRepository {
+) : UserCacheableRepositoryOutPort {
     override fun findByUsername(username: String): Mono<User> {
         return redisTemplate.opsForValue().get(prefix + username).map { it.toEntity() }
     }

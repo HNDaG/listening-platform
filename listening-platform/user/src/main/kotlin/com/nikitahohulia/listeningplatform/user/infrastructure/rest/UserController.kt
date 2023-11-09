@@ -7,7 +7,7 @@ import com.nikitahohulia.listeningplatform.publisher.infrastructure.dto.request.
 import com.nikitahohulia.listeningplatform.publisher.infrastructure.dto.response.PublisherDtoResponse
 import com.nikitahohulia.listeningplatform.publisher.infrastructure.mapper.toEntity
 import com.nikitahohulia.listeningplatform.publisher.infrastructure.mapper.toResponse
-import com.nikitahohulia.listeningplatform.user.application.service.UserServiceImpl
+import com.nikitahohulia.listeningplatform.user.application.service.UserService
 import com.nikitahohulia.listeningplatform.user.infrastructure.dto.request.UserDtoRequest
 import com.nikitahohulia.listeningplatform.user.infrastructure.dto.response.UserDtoResponse
 import com.nikitahohulia.listeningplatform.user.infrastructure.mapper.toEntity
@@ -28,7 +28,7 @@ import reactor.core.publisher.Mono
 @LogOnException
 @RestController
 @RequestMapping("/api/V2/users")
-class UserController(private val userService: UserServiceImpl) {
+class UserController(private val userService: UserService) {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping

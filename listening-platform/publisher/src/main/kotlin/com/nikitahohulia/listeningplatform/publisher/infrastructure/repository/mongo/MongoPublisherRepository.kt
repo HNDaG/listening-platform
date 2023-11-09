@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.core.remove
 import org.springframework.stereotype.Repository
-import com.nikitahohulia.listeningplatform.publisher.application.port.PublisherRepository
+import com.nikitahohulia.listeningplatform.publisher.application.port.PublisherRepositoryOutPort
 import com.nikitahohulia.listeningplatform.publisher.domain.Publisher
 import com.nikitahohulia.listeningplatform.publisher.infrastructure.mapper.toEntity
 import com.nikitahohulia.listeningplatform.publisher.infrastructure.mapper.toMongo
@@ -17,7 +17,7 @@ import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
 @Repository
-class MongoPublisherRepository(private val mongoTemplate: ReactiveMongoTemplate) : PublisherRepository {
+class MongoPublisherRepository(private val mongoTemplate: ReactiveMongoTemplate) : PublisherRepositoryOutPort {
 
     override fun findById(id: ObjectId): Mono<Publisher> {
         val query = Query().addCriteria(Criteria.where("id").`is`(id))

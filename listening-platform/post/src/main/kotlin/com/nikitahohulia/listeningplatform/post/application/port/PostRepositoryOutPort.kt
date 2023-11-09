@@ -5,7 +5,7 @@ import org.bson.types.ObjectId
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
-interface PostRepository {
+interface PostRepositoryOutPort {
 
     fun findPostById(id: ObjectId): Mono<Post>
 

@@ -5,7 +5,7 @@ import com.nikitahohulia.listeningplatform.publisher.domain.Publisher
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
-interface PublisherRepository {
+interface PublisherRepositoryOutPort {
 
     fun findById(id: ObjectId): Mono<Publisher>
 

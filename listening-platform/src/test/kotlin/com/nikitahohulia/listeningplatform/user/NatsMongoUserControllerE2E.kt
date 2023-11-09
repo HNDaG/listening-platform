@@ -21,7 +21,7 @@ import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.get_by_username.
 import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.get_by_username.proto.GetUserByUsernameResponse
 import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.update.proto.UpdateUserRequest
 import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.update.proto.UpdateUserResponse
-import com.nikitahohulia.listeningplatform.user.application.port.UserRepository
+import com.nikitahohulia.listeningplatform.user.application.port.UserRepositoryOutPort
 import com.nikitahohulia.listeningplatform.user.domain.User
 import com.nikitahohulia.listeningplatform.user.infrastructure.mapper.toProto
 
@@ -41,7 +41,7 @@ class NatsMongoUserControllerE2E {
 
     @Qualifier("cacheableUserRepository")
     @Autowired
-    private lateinit var userRepository: UserRepository
+    private lateinit var userRepository: UserRepositoryOutPort
 
     private val faker = Faker()
 
