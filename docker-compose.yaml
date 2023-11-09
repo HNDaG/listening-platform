@@ -30,8 +30,8 @@ services:
       - "27017:27017"
     healthcheck:
       test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
-      interval: 1s
-      timeout: 1s
+      interval: 10s
+      timeout: 10s
       retries: 5
     volumes:
       - ./mongodb_data:/data/db
@@ -43,8 +43,8 @@ services:
       - "4222:4222"
     healthcheck:
       test: [ "CMD", "nats", "ping" ]
-      interval: 1s
-      timeout: 1s
+      interval: 5s
+      timeout: 5s
       retries: 5
 
   redis:

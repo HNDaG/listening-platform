@@ -21,9 +21,10 @@ import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.get_by_username.
 import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.get_by_username.proto.GetUserByUsernameResponse
 import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.update.proto.UpdateUserRequest
 import com.nikitahohulia.api.internal.v2.usersvc.input.reqreply.update.proto.UpdateUserResponse
-import com.nikitahohulia.listeningplatform.dto.response.toProto
-import com.nikitahohulia.listeningplatform.entity.User
-import com.nikitahohulia.listeningplatform.repository.UserRepository
+import com.nikitahohulia.listeningplatform.user.application.port.UserRepositoryOutPort
+import com.nikitahohulia.listeningplatform.user.domain.User
+import com.nikitahohulia.listeningplatform.user.infrastructure.mapper.toProto
+
 import io.nats.client.Connection
 import net.datafaker.Faker
 import org.bson.types.ObjectId
@@ -40,7 +41,7 @@ class NatsMongoUserControllerE2E {
 
     @Qualifier("cacheableUserRepository")
     @Autowired
-    private lateinit var userRepository: UserRepository
+    private lateinit var userRepository: UserRepositoryOutPort
 
     private val faker = Faker()
 
@@ -136,4 +137,3 @@ class NatsMongoUserControllerE2E {
         return parser.parseFrom(response.get().data)
     }
 }
-

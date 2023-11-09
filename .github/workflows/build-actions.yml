@@ -16,18 +16,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Start MongoDB container
-        run: |
-          docker run -d --name localmongo -p 27017:27017 \
-            -e MONGO_INITDB_ROOT_USERNAME=root \
-            -e MONGO_INITDB_ROOT_PASSWORD=secret \
-            mongo:latest
-      - name: Start NATS container
-        run: docker run -d --name nats-server -p 4222:4222 nats:latest
-
-      - name: Start Redis container
-        run: docker run -d --name redis -p 6379:6379 redis:latest
-
       - name: Setup JDK
         uses: actions/setup-java@v3
         with:
@@ -39,4 +27,17 @@ jobs:
         run: chmod +x gradlew
 
       - name: Compile and run checks
-        run: ./gradlew build -s
+        run: ./gradlew assemble
+
+      - name: Start Docker compose
+        run: docker compose -f docker-compose.yaml up --build --force-recreate -d app
+
+      - name: Stop Docker Container
+        run: docker stop listening-platform-app-1
+
+      - name: Run tests
+        run: ./gradlew test
+
+      - name: Stop Docker compose
+        if: always()
+        run: docker compose down
