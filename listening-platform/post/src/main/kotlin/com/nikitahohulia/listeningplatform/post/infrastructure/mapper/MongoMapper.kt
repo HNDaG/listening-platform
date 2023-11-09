@@ -1,7 +1,7 @@
 package com.nikitahohulia.listeningplatform.post.infrastructure.mapper
 
 import com.nikitahohulia.listeningplatform.post.domain.Post
-import com.nikitahohulia.listeningplatform.post.infrastructure.repository.entity.MongoPost
+import com.nikitahohulia.listeningplatform.post.infrastructure.repository.mongo.entity.MongoPost
 
 fun Post.toMongo() = MongoPost(
     id = id,

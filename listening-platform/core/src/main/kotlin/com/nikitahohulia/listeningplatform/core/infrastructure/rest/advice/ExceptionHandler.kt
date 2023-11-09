@@ -2,7 +2,7 @@ package com.nikitahohulia.listeningplatform.core.infrastructure.rest.advice
 
 import com.mongodb.MongoException
 import com.nikitahohulia.listeningplatform.core.application.exception.DuplicateException
-import com.nikitahohulia.listeningplatform.core.application.exception.response.ExceptionResponse
+import com.nikitahohulia.listeningplatform.core.infrastructure.rest.advice.response.ExceptionResponse
 import com.nikitahohulia.listeningplatform.core.application.exception.NotFoundException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity

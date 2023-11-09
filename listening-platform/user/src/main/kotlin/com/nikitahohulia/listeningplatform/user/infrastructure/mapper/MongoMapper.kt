@@ -1,7 +1,7 @@
 package com.nikitahohulia.listeningplatform.user.infrastructure.mapper
 
 import com.nikitahohulia.listeningplatform.user.domain.User
-import com.nikitahohulia.listeningplatform.user.infrastructure.repository.entity.MongoUser
+import com.nikitahohulia.listeningplatform.user.infrastructure.repository.mongo.entity.MongoUser
 
 fun User.toMongo(): MongoUser {
     return MongoUser(

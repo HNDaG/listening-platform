@@ -1,4 +1,4 @@
-package com.nikitahohulia.listeningplatform.publisher.infrastructure.dto.request
+package com.nikitahohulia.listeningplatform.publisher.infrastructure.rest.dto.request
 
 import jakarta.validation.constraints.Size
 

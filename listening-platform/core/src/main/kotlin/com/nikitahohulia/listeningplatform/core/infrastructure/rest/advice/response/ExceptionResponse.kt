@@ -1,4 +1,4 @@
-package com.nikitahohulia.listeningplatform.core.application.exception.response
+package com.nikitahohulia.listeningplatform.core.infrastructure.rest.advice.response
 
 import java.time.LocalDateTime
 

@@ -4,7 +4,7 @@ import com.nikitahohulia.listeningplatform.user.application.port.UserCacheableRe
 import com.nikitahohulia.listeningplatform.user.domain.User
 import com.nikitahohulia.listeningplatform.user.infrastructure.mapper.toEntity
 import com.nikitahohulia.listeningplatform.user.infrastructure.mapper.toRedisUser
-import com.nikitahohulia.listeningplatform.user.infrastructure.repository.entity.RedisUser
+import com.nikitahohulia.listeningplatform.user.infrastructure.repository.redis.entity.RedisUser
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.stereotype.Repository

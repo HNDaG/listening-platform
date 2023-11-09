@@ -1,4 +1,4 @@
-package com.nikitahohulia.listeningplatform.user.infrastructure.dto.response
+package com.nikitahohulia.listeningplatform.user.infrastructure.adapter.rest.dto.response
 
 data class UserDtoResponse(
     val id: String,

@@ -4,7 +4,7 @@ import com.nikitahohulia.listeningplatform.post.application.port.PostRepositoryO
 import com.nikitahohulia.listeningplatform.post.domain.Post
 import com.nikitahohulia.listeningplatform.post.infrastructure.mapper.toEntity
 import com.nikitahohulia.listeningplatform.post.infrastructure.mapper.toMongo
-import com.nikitahohulia.listeningplatform.post.infrastructure.repository.entity.MongoPost
+import com.nikitahohulia.listeningplatform.post.infrastructure.repository.mongo.entity.MongoPost
 import org.bson.types.ObjectId
 import org.springframework.data.domain.Sort
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate

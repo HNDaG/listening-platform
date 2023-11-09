@@ -1,7 +1,7 @@
 package com.nikitahohulia.listeningplatform.user.infrastructure.mapper
 
 import com.nikitahohulia.listeningplatform.user.domain.User
-import com.nikitahohulia.listeningplatform.user.infrastructure.repository.entity.RedisUser
+import com.nikitahohulia.listeningplatform.user.infrastructure.repository.redis.entity.RedisUser
 
 fun RedisUser.toEntity() = User(
     id = this.id,

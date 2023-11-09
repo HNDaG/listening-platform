@@ -1,15 +1,15 @@
-package com.nikitahohulia.listeningplatform.user.infrastructure.rest
+package com.nikitahohulia.listeningplatform.user.infrastructure.adapter.rest
 
 import com.nikitahohulia.listeningplatform.core.infrastructure.annotation.LogOnException
 import com.nikitahohulia.listeningplatform.post.infrastructure.dto.response.PostDtoResponse
 import com.nikitahohulia.listeningplatform.post.infrastructure.mapper.toResponse
-import com.nikitahohulia.listeningplatform.publisher.infrastructure.dto.request.PublisherDtoRequest
-import com.nikitahohulia.listeningplatform.publisher.infrastructure.dto.response.PublisherDtoResponse
+import com.nikitahohulia.listeningplatform.publisher.infrastructure.rest.dto.request.PublisherDtoRequest
+import com.nikitahohulia.listeningplatform.publisher.infrastructure.rest.dto.response.PublisherDtoResponse
 import com.nikitahohulia.listeningplatform.publisher.infrastructure.mapper.toEntity
 import com.nikitahohulia.listeningplatform.publisher.infrastructure.mapper.toResponse
 import com.nikitahohulia.listeningplatform.user.application.svc.UserService
-import com.nikitahohulia.listeningplatform.user.infrastructure.dto.request.UserDtoRequest
-import com.nikitahohulia.listeningplatform.user.infrastructure.dto.response.UserDtoResponse
+import com.nikitahohulia.listeningplatform.user.infrastructure.adapter.rest.dto.request.UserDtoRequest
+import com.nikitahohulia.listeningplatform.user.infrastructure.adapter.rest.dto.response.UserDtoResponse
 import com.nikitahohulia.listeningplatform.user.infrastructure.mapper.toEntity
 import com.nikitahohulia.listeningplatform.user.infrastructure.mapper.toResponse
 import jakarta.validation.Valid

@@ -1,4 +1,4 @@
-package com.nikitahohulia.listeningplatform.user.infrastructure.repository.entity
+package com.nikitahohulia.listeningplatform.user.infrastructure.repository.redis.entity
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer

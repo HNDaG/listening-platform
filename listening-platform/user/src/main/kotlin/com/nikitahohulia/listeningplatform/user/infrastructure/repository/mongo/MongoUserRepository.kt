@@ -5,7 +5,7 @@ import com.nikitahohulia.listeningplatform.user.application.port.UserRepositoryO
 import com.nikitahohulia.listeningplatform.user.domain.User
 import com.nikitahohulia.listeningplatform.user.infrastructure.mapper.toEntity
 import com.nikitahohulia.listeningplatform.user.infrastructure.mapper.toMongo
-import com.nikitahohulia.listeningplatform.user.infrastructure.repository.entity.MongoUser
+import com.nikitahohulia.listeningplatform.user.infrastructure.repository.mongo.entity.MongoUser
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate
 import org.springframework.data.mongodb.core.findAll

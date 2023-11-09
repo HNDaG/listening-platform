@@ -9,9 +9,8 @@ import com.nikitahohulia.listeningplatform.publisher.application.port.PublisherR
 import com.nikitahohulia.listeningplatform.publisher.domain.Publisher
 import com.nikitahohulia.listeningplatform.user.application.port.UserRepositoryOutPort
 import com.nikitahohulia.listeningplatform.user.application.port.UserServiceInPort
-import com.nikitahohulia.listeningplatform.user.application.port.UserUpdatedEventProducerOutPort
+import com.nikitahohulia.listeningplatform.user.application.port.UserEventProducerOutPort
 import com.nikitahohulia.listeningplatform.user.domain.User
-import com.nikitahohulia.listeningplatform.user.infrastructure.mapper.toProto
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
@@ -26,7 +25,7 @@ class UserService(
     @Qualifier("cacheableUserRepository") private val userRepository: UserRepositoryOutPort,
     private val publisherRepositoryOutPort: PublisherRepositoryOutPort,
     private val postRepositoryOutPort: PostRepositoryOutPort,
-    @Qualifier("userKafkaProducer") private val kafkaUserProducer: UserUpdatedEventProducerOutPort
+    private val userProducer: UserEventProducerOutPort
 ) : UserServiceInPort {
 
     override fun getUserByUsername(username: String): Mono<User> {
@@ -60,7 +59,7 @@ class UserService(
                     .flatMap { (user, newPublisher) ->
                         val userAsPublisher = user.copy(publisherId = newPublisher.id)
                         userRepository.save(userAsPublisher)
-                            .doOnNext { kafkaUserProducer.publishEvent(it.toProto()) }
+                            .doOnNext { userProducer.publishEvent(it) }
                             .thenReturn(newPublisher)
                     }
             }
@@ -73,7 +72,7 @@ class UserService(
             .switchIfEmpty { NotFoundException("There is no user to delete publisher from").toMono() }
             .flatMap { user ->
                 userRepository.save(user.copy(publisherId = null))
-                    .doOnNext { kafkaUserProducer.publishEvent(it.toProto()) }
+                    .doOnNext { userProducer.publishEvent(it) }
             }
             .then(Mono.empty())
     }
@@ -82,7 +81,7 @@ class UserService(
         return userRepository.findByUsername(oldUsername)
             .switchIfEmpty { NotFoundException("User not found with username = $oldUsername").toMono() }
             .flatMap { userRepository.save(user.copy(id = it.id)) }
-            .doOnNext { kafkaUserProducer.publishEvent(it.toProto()) }
+            .doOnNext { userProducer.publishEvent(it) }
             .flatMap { userRepository.findByUsername(it.username) }
     }
 
@@ -107,7 +106,7 @@ class UserService(
                 user.subscriptions.add(publisher.id!!)
                 userRepository.save(user)
             }
-            .doOnNext { kafkaUserProducer.publishEvent(it.toProto()) }
+            .doOnNext { userProducer.publishEvent(it) }
             .thenReturn(Unit)
     }
 

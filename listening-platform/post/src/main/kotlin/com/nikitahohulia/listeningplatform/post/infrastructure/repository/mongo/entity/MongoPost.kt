@@ -1,6 +1,6 @@
-package com.nikitahohulia.listeningplatform.post.infrastructure.repository.entity
+package com.nikitahohulia.listeningplatform.post.infrastructure.repository.mongo.entity
 
-import com.nikitahohulia.listeningplatform.post.infrastructure.repository.entity.MongoPost.Companion.COLLECTION_NAME
+import com.nikitahohulia.listeningplatform.post.infrastructure.repository.mongo.entity.MongoPost.Companion.COLLECTION_NAME
 import org.bson.types.ObjectId
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document

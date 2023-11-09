@@ -2,7 +2,7 @@ package com.nikitahohulia.listeningplatform.user.infrastructure.mapper
 
 import com.nikitahohulia.listeningplatform.user.domain.User
 import com.nikitahohulia.api.internal.v2.usersvc.commonmodels.user.User as ProtoUser
-import com.nikitahohulia.listeningplatform.user.infrastructure.dto.response.UserDtoResponse
+import com.nikitahohulia.listeningplatform.user.infrastructure.adapter.rest.dto.response.UserDtoResponse
 import org.bson.types.ObjectId
 
 fun ProtoUser.toEntity(): User {

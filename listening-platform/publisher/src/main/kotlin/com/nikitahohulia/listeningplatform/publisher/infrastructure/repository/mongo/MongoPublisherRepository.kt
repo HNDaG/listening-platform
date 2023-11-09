@@ -12,7 +12,7 @@ import com.nikitahohulia.listeningplatform.publisher.application.port.PublisherR
 import com.nikitahohulia.listeningplatform.publisher.domain.Publisher
 import com.nikitahohulia.listeningplatform.publisher.infrastructure.mapper.toEntity
 import com.nikitahohulia.listeningplatform.publisher.infrastructure.mapper.toMongo
-import com.nikitahohulia.listeningplatform.publisher.infrastructure.repository.entity.MongoPublisher
+import com.nikitahohulia.listeningplatform.publisher.infrastructure.repository.mongo.entity.MongoPublisher
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
