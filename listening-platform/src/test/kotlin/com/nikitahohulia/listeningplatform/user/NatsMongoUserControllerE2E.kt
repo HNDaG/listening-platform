@@ -137,4 +137,3 @@ class NatsMongoUserControllerE2E {
         return parser.parseFrom(response.get().data)
     }
 }
-
