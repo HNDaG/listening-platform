@@ -1,4 +1,4 @@
-package com.nikitahohulia.listeningplatform.user.application.service
+package com.nikitahohulia.listeningplatform.user.application.svc
 
 
 import com.nikitahohulia.listeningplatform.core.application.exception.DuplicateException

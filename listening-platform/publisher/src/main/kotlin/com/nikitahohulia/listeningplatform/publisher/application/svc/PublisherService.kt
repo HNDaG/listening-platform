@@ -1,4 +1,4 @@
-package com.nikitahohulia.listeningplatform.publisher.application.service
+package com.nikitahohulia.listeningplatform.publisher.application.svc
 
 import com.nikitahohulia.listeningplatform.core.application.exception.DuplicateException
 import com.nikitahohulia.listeningplatform.core.application.exception.NotFoundException
@@ -7,7 +7,7 @@ import com.nikitahohulia.listeningplatform.post.application.port.PostRepositoryO
 import com.nikitahohulia.listeningplatform.post.domain.Post
 import org.springframework.stereotype.Service
 import com.nikitahohulia.listeningplatform.publisher.application.port.PublisherRepositoryOutPort
-import com.nikitahohulia.listeningplatform.publisher.application.port.PublisherOperationsInPort
+import com.nikitahohulia.listeningplatform.publisher.application.port.PublisherServiceInPort
 import com.nikitahohulia.listeningplatform.publisher.domain.Publisher
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -17,7 +17,7 @@ import reactor.kotlin.core.publisher.toMono
 class PublisherService(
     private val publisherRepositoryOutPort: PublisherRepositoryOutPort,
     private val postRepositoryOutPort: PostRepositoryOutPort,
-) : PublisherOperationsInPort {
+) : PublisherServiceInPort {
 
     override fun getPublisherByPublisherName(publisherName: String): Mono<Publisher> {
         return publisherRepositoryOutPort.findByPublisherName(publisherName)

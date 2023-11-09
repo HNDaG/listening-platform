@@ -5,7 +5,7 @@ import com.nikitahohulia.listeningplatform.publisher.domain.Publisher
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
-interface PublisherOperationsInPort {
+interface PublisherServiceInPort {
 
     fun getPublisherByPublisherName(publisherName: String): Mono<Publisher>
 

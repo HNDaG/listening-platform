@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
-import com.nikitahohulia.listeningplatform.publisher.application.port.PublisherOperationsInPort
+import com.nikitahohulia.listeningplatform.publisher.application.port.PublisherServiceInPort
 import com.nikitahohulia.listeningplatform.publisher.infrastructure.dto.request.PublisherDtoRequest
 import com.nikitahohulia.listeningplatform.publisher.infrastructure.dto.response.PublisherDtoResponse
 import com.nikitahohulia.listeningplatform.publisher.infrastructure.mapper.toEntity
@@ -25,7 +25,7 @@ import reactor.core.publisher.Mono
 @LogOnException
 @RestController
 @RequestMapping("/api/V2/publishers")
-class PublisherController(private val publisherOperationsInPort: PublisherOperationsInPort) {
+class PublisherController(private val publisherOperationsInPort: PublisherServiceInPort) {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
