@@ -2,7 +2,6 @@ package com.nikitahohulia.listeningplatform.user.infrastructure.adapter.kafka.co
 
 import com.nikitahohulia.api.internal.v2.usersvc.output.pubsub.update.proto.UserUpdatedEvent
 import com.nikitahohulia.listeningplatform.user.application.port.UserEventBroadcasterOutPort
-import com.nikitahohulia.listeningplatform.user.application.port.UserEventProducerOutPort
 import com.nikitahohulia.listeningplatform.user.infrastructure.mapper.toEntity
 import jakarta.annotation.PostConstruct
 import org.springframework.stereotype.Component
